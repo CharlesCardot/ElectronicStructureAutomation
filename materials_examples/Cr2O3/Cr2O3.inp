@@ -1,0 +1,11 @@
+{
+     "NAME": "Cr2O3",
+     "nd": 3,
+     "coordination_num": 6,
+     "TM": "Cr",
+     "TM_VALENCE": "3d",
+     "LIGAND": "O",
+     "LIGAND_VALENCE": "2p",
+	 "TM_MAG_DIR": [0,1,0],
+	 "TM_H_MAG": 0 
+}

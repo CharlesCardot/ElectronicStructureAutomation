@@ -1,0 +1,23 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=4
+#PBS -N QSUBNAME_VtC
+#PBS -o quanty.sout
+#PBS -e quanty.serr
+#PBS -V
+########################################
+# This template is doing batch
+# VtC-XES with FEFF.
+# It calculates and plots the various 
+# polarizations
+########################################
+cd $PBS_O_WORKDIR
+
+workdir=$(pwd)
+material=$(basename "$workdir")
+
+# Edit various files to include material name
+sed -i -e "s/NAME/${material}/g" "${workdir}/VtC_FEFF/qsub.script"
+
+cd "./VtC_FEFF/"
+python write_feffinp.py
+qsub qsub.script

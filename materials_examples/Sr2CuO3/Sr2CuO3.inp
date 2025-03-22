@@ -1,0 +1,9 @@
+{
+     "NAME": "Sr2CuO3",
+     "nd": 9,
+     "coordination_num": 4,
+     "TM": "Cu",
+     "TM_VALENCE": "3d",
+     "LIGAND": "O",
+     "LIGAND_VALENCE": "2p"
+}

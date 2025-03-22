@@ -1,0 +1,10 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=1
+#PBS -N VtC_ypzd_d+q
+#PBS -o feff.sout
+#PBS -e feff.serr
+#PBS -V
+cd $PBS_O_WORKDIR
+
+module load openmpi/4.0.5-gcc-8.3.1
+feffmpi 4 feff.inp &> testing.out

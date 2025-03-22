@@ -1,0 +1,9 @@
+{
+     "NAME": "FeGe2",
+     "nd": 6,
+     "coordination_num": 10,
+     "TM": "Fe",
+     "TM_VALENCE": "3d",
+     "LIGAND": "Ge",
+     "LIGAND_VALENCE": "4p"
+}

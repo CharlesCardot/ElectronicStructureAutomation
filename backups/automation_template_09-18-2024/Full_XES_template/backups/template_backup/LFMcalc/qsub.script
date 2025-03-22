@@ -1,0 +1,30 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=4
+#PBS -N NiO
+#PBS -o quanty.sout
+#PBS -e quanty.serr
+#PBS -V
+cd $PBS_O_WORKDIR
+
+# Run to find rho_d and lowest Npsi
+# This is necessary for efficiency of the batch jobs
+sed -i -e "s/DDDD/2.0/g" "3_XAS.Quanty"
+sed -i -e "s/UUUU/5.0/g" "3_XAS.Quanty"
+quanty 3_XAS.Quanty &> testing.out
+python edit_3_XAS.py
+
+# Edit files and copy them to batch jobs folders
+sed -i -e "s/Delta = 2.0/Delta = DDDD/g" "3_XAS.Quanty"
+sed -i -e "s/Udd = 5.0/Udd = UUUU/g" "3_XAS.Quanty"
+cp 3_XAS.Quanty QueueStuff/10elec_0.0001_testUD/template.quanty
+cp 3_XAS.Quanty QueueStuff/10elec_0.0001_testUD_extreme/template.quanty
+
+# Put default Delta and Udd back in 3_XAS.Quanty
+sed -i -e "s/DDDD/2.0/g" "3_XAS.Quanty"
+sed -i -e "s/UUUU/5.0/g" "3_XAS.Quanty"
+
+# Run batch jobs
+cd QueueStuff/10elec_0.0001_testUD/
+./execute.sh
+cd ../10elec_0.0001_testUD_extreme/
+./execute.sh

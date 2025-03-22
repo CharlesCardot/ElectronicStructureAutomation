@@ -1,0 +1,9 @@
+{
+     "NAME": "HoCoC2",
+     "nd": 6,
+     "coordination_num": 4,
+     "TM": "Co",
+     "TM_VALENCE": "3d",
+     "LIGAND": "C",
+     "LIGAND_VALENCE": "2p"
+}

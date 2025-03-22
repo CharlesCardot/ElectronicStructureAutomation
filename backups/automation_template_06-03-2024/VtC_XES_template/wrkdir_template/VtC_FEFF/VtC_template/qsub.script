@@ -1,0 +1,38 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=1
+#PBS -N NAME_VtC
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -V
+cd $PBS_O_WORKDIR
+
+
+# Regular Polarized VtC-XES
+# Calculate the ldos in the isotropic folder
+sed 's/POLARIZATION/POLARIZATION\n\nLDOS -30 30 0.2/' feff_template.inp > isotropic/feff.inp
+sed -i 's/POLARIZATION/*POLARIZATION/' isotropic/feff.inp
+sed 's/POLARIZATION/POLARIZATION  1  0  0/' feff_template.inp > x_polarization/feff.inp
+sed 's/POLARIZATION/POLARIZATION  0  1  0/' feff_template.inp > y_polarization/feff.inp
+sed 's/POLARIZATION/POLARIZATION  0  0  1/' feff_template.inp > z_polarization/feff.inp
+
+# Polarized VtC-XES (Dipole + Quadrupole)
+sed 's/POLARIZATION/*POLARIZATION\n\nMULTIPOLE 2 0/' feff_template.inp > isotropic_withquad/feff.inp
+sed 's/POLARIZATION/POLARIZATION  0  1  0\n\nMULTIPOLE 2 0\nELLIPTICITY 1 1 0 0/' feff_template.inp > x_direction_withquad/feff.inp
+sed 's/POLARIZATION/POLARIZATION  0  0  1\n\nMULTIPOLE 2 0\nELLIPTICITY 1 0 1 0/' feff_template.inp > y_direction_withquad/feff.inp
+sed 's/POLARIZATION/POLARIZATION  1  0  0\n\nMULTIPOLE 2 0\nELLIPTICITY 1 0 0 1/' feff_template.inp > z_direction_withquad/feff.inp
+
+# ELLIPTICITY elpty x y z
+# The ellipticity flag makes the electric field elliptically polarized.
+# The first number is the ratio of the long to short axes of the ellipse, so elpty of 1
+# just means that you're averaging evenly over a plane. The x y z direction defines the 
+# direction of photon propegation (\vec{k}). The POLARIZATION flag should be 
+# a vector perpendicular to k, and defines the main axis of the ellipse.
+
+# Iterate over each folder in the current directory
+for folder in */; do
+    if [ -d "$folder" ]; then
+        cd "$folder"
+        qsub qsub.script
+        cd ..
+    fi
+done
