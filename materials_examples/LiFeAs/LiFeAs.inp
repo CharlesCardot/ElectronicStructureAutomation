@@ -1,9 +1,0 @@
-{
-     "NAME": "LiFeAs",
-     "nd": 6,
-     "coordination_num": 4,
-     "TM": "Fe",
-     "TM_VALENCE": "3d",
-     "LIGAND": "As",
-     "LIGAND_VALENCE": "4p"
-}

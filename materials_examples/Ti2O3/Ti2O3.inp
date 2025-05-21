@@ -1,9 +1,0 @@
-{
-     "NAME": "Ti2O3",
-     "nd": 1,
-     "coordination_num": 6,
-     "TM": "Ti",
-     "TM_VALENCE": "3d",
-     "LIGAND": "O",
-     "LIGAND_VALENCE": "2p"
-}
