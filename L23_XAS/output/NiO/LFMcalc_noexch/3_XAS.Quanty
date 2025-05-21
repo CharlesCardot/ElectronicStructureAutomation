@@ -1,0 +1,542 @@
+-- Material: NiO
+-- Date: 2025-05-21 18:17:48.858310 
+-- Author: Charles Cardot
+
+-- read the output of FPLO
+print("--Read FPLO output--\n")
+FPLOOut = FileReadDresdenFPLO("/home/ccardot3/QuantyScripts/automation/L23_XAS/output/NiO/DFT/out.wan")
+
+function test(O)
+    local m = OperatorToMatrix(O)
+    m = Matrix.ToUserdata(Chop(m,1e-3))
+    print(Matrix.Sub(m, {1,20},{1,20}))
+end
+
+-- from the DFT output we can create a tight binding Hamiltonian
+print("--Create the Tight Binding Hamiltonian--\n")
+print("Create the tight binding Hamiltonian for the crystal\n")
+TB = TightBindingDefFromDresdenFPLO(FPLOOut)
+
+ClusterTmp = FindAllAtomsInsideSphere(TB.Atoms,TB.Cell,{-0.000000000000000 , -0.000000000000000 , -0.000000000000000},4.62)
+print("\n Temp Cluster")
+print(ClusterTmp)
+Cluster = {}
+        for key, atom in pairs(ClusterTmp) do
+            if atom[1] == "Ni" then
+                Cluster[1] = Copy(atom)
+                break
+            end
+        end
+        for key, atom in pairs(ClusterTmp) do
+            if atom[1] ~= "Ni" then
+                Cluster[#Cluster + 1] = Copy(atom)
+            end
+        end
+        ClusterTmp = nil
+print("\n Cluster Sorted")
+print(Cluster)
+
+HDFTLarge, ClusterTB = CreateClusterHamiltonian(TB, {"open", Cluster},  {{"AddSpin",true}})
+
+tri, T2 = BlockBandDiagonalize(OperatorToMatrix(HDFTLarge),10, {{"NTri", 2}})
+
+HDFT = Rotate(HDFTLarge, T2)
+test(HDFT)
+print(HDFT.NF)
+-------------------------------------------------------------------------------------------------------
+--Now we want to add the Ni 2p shell to the system
+--New index object (first argument is a list of all orbitals, the second argument groups the two Ni orbitals)
+Index, NFermi = CreateAtomicIndicesDict({"Ni_3d","Ligand_d","Ni_2p"}, {{"Ni",{"Ni_2p","Ni_3d"}}})
+HDFT.NF = NFermi
+print(HDFT.NF)
+print("The indices of the system are now fixed:")
+print(Index)
+print("")
+
+-- Next we need to correct for the double counting (i.e. subtract the DFT Mean-field approximation of the Coulomb interaction)
+print("--Subtract the DFT Mean-field Coulomb interaction between the d electrons from the tight-binding Hamiltonian--\n")
+-- calculate DFT density Matrix in order to create double counting potential
+print("Calculate the DFT 1-particle density matrix\n")
+rhoNoSpin = Chop(CalculateRho(TB))
+-- reduce the matrix to keep only the d shell
+rhoNoSpin_d = Matrix.ToTable(Matrix.Sub(rhoNoSpin,5))
+-- add spin
+rho_d = Matrix.AddSpin(rhoNoSpin_d)
+print(rho_d)
+rho_d = { { 0.9895874414103 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0.9895874414103 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0.98958744141031 , 0 , 0 , 0 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0.98958744141031 , 0 , 0 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0.6650661519633 , 0 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0 , 0.6650661519633 , 0 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0 , 0 , 0.9895874414103 , 0 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.9895874414103 , 0 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.66506615196324 , 0 } ,
+{ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0.66506615196324 } }
+
+
+YtoZtriple = YtoZMatrix({"Ni_3d","Ligand_d","Ni_2p"})
+
+-- create the Coulomb operator on a basis of tesseral Harmonics
+print("Create the Coulomb operator for the d-shell\n")
+OppF0 = Rotate(NewOperator("U",10,Index["Ni_3d_Up"],Index["Ni_3d_Dn"],{1,0,0}),YtoZMatrix({"d"}))
+OppF2 = Rotate(NewOperator("U",10,Index["Ni_3d_Up"],Index["Ni_3d_Dn"],{0,1,0}),YtoZMatrix({"d"}))
+OppF4 = Rotate(NewOperator("U",10,Index["Ni_3d_Up"],Index["Ni_3d_Dn"],{0,0,1}),YtoZMatrix({"d"}))
+
+print("Create the Coulomb operator between the p- and d-shell\n")
+OppUpdF0 = Rotate(NewOperator("U", NFermi, Index["Ni_2p_Up"],Index["Ni_2p_Dn"], Index["Ni_3d_Up"],Index["Ni_3d_Dn"], {1,0}, {0,0}),YtoZtriple)
+OppUpdF2 = Rotate(NewOperator("U", NFermi, Index["Ni_2p_Up"],Index["Ni_2p_Dn"], Index["Ni_3d_Up"],Index["Ni_3d_Dn"], {0,1}, {0,0}),YtoZtriple)
+OppUpdG1 = Rotate(NewOperator("U", NFermi, Index["Ni_2p_Up"],Index["Ni_2p_Dn"], Index["Ni_3d_Up"],Index["Ni_3d_Dn"], {0,0}, {1,0}),YtoZtriple)
+OppUpdG3 = Rotate(NewOperator("U", NFermi, Index["Ni_2p_Up"],Index["Ni_2p_Dn"], Index["Ni_3d_Up"],Index["Ni_3d_Dn"], {0,0}, {0,1}),YtoZtriple)
+
+-- create the Hartree-Fock mean-field approximation that needs to be substracted from the DFT results
+print("Create the Coulomb operator for the d-shell using the mean-field approximation (needs the DFT density)\n")
+OppF0MFDFT = Chop(MeanFieldOperator(OppF0,rho_d,{{"AddDFTSelfInteraction",true}}))
+OppF2MFDFT = Chop(MeanFieldOperator(OppF2,rho_d,{{"AddDFTSelfInteraction",true}}))
+OppF4MFDFT = Chop(MeanFieldOperator(OppF4,rho_d,{{"AddDFTSelfInteraction",true}}))
+
+-- change the dimension of the Coulomb operator the work on a space that includes both the d and the ligand orbitals
+--The operators acting on the d- and p-shell furthermore need to be rotated
+OppF0.NF = NFermi
+OppF2.NF = NFermi
+OppF4.NF = NFermi
+OppF0MFDFT.NF = NFermi
+OppF2MFDFT.NF = NFermi
+OppF4MFDFT.NF = NFermi
+
+
+-- set parameters
+print("--Set the parameters--\n")
+nd = 8
+Delta = 2.0
+Udd = 5.0
+Upd = 1.20*Udd
+--The slater integrals are calculated using the radial functions generated by FPLO, which can be read within Quanty:
+correlatedRadialFunctionsp = ReadFPLOBasisFunctions({"2p"},"/home/ccardot3/QuantyScripts/automation/L23_XAS/output/NiO/DFT/+fcor.001.1")
+correlatedRadialFunctionsd = ReadFPLOBasisFunctions({"3d"},"/home/ccardot3/QuantyScripts/automation/L23_XAS/output/NiO/DFT/+fval.001.1")
+--The radial functions are saved in two different files, but we need them in the same object:
+correlatedRadialFunctions={correlatedRadialFunctionsp[1],correlatedRadialFunctionsd[1]}
+--Now the slater integrals can be calculated
+slaterIntegrals = GetSlaterIntegrals({"2p","3d"},correlatedRadialFunctions)
+
+--The resulting object can then be evaluated at the position of interest:
+scale = 1.0
+F0ddtemp = slaterIntegrals["3d 3d 3d 3d"][0] * EnergyUnits.Ha.value*scale
+F2dd = slaterIntegrals["3d 3d 3d 3d"][2] * EnergyUnits.Ha.value*scale
+F4dd = slaterIntegrals["3d 3d 3d 3d"][4] * EnergyUnits.Ha.value*scale
+F0dd    = Udd+(F2dd+F4dd)*2/63
+F0pdtemp = slaterIntegrals["3d 2p 3d 2p"][0] * EnergyUnits.Ha.value*scale
+F2pd    =  slaterIntegrals["3d 2p 3d 2p"][2] * EnergyUnits.Ha.value*scale
+G1pd    =  slaterIntegrals["2p 3d 3d 2p"][1] * EnergyUnits.Ha.value*scale
+G3pd    =  slaterIntegrals["2p 3d 3d 2p"][3] * EnergyUnits.Ha.value*scale
+F0pd    = Upd + (1/15)*G1pd + (3/70)*G3pd
+
+-- Magnetic Field
+Bz = 0.1 * EnergyUnits.Tesla.value
+
+-- Exchange Field
+mag_moment_dir = {0, 0, 0}
+H_mag = 0.00 -- (meV)
+Hx = H_mag * mag_moment_dir[1]
+Hy = H_mag * mag_moment_dir[2]
+Hz = H_mag * mag_moment_dir[3]
+
+-- Spin orbit
+zeta_3d =  0.082586623136141
+zeta_2p =  11.505663567558097
+
+----------------------------------------------------------------------------------------------
+print("Parameters:")
+print("nd = "..nd)
+print("Delta fit to exp = "..Delta.." eV")
+print("Udd fit to exp= "..Udd.." eV")
+print("Upd fit to exp = "..Upd.." eV")
+print("Bz = "..Bz.." eV")
+print("zeta_3d = "..zeta_3d.." eV")
+print("zeta_2p = "..zeta_2p.." eV")
+print("")
+
+print("Slater integrals computed from DFT radial wavefunctions:")
+print("F0dd ab initio = "..F0ddtemp.." eV")
+print("F2dd = "..F2dd.." eV")
+print("F4dd = "..F4dd.." eV")
+print("F0pd ab initio = "..F0pdtemp.." eV")
+print("F2pd = "..F2pd.." eV")
+print("G1pd = "..G1pd.." eV")
+print("G3pd = "..G3pd.." eV")
+print("")
+
+print("Monopole like Slater integrals (from U):")
+print("F0dd fit to exp = "..F0dd.." eV")
+print("F0pd fit to exp = "..F0pd.." eV")
+print("")
+
+function table.val_to_str ( v )
+  if "string" == type( v ) then
+    v = string.gsub( v, "\n", "\\n" )
+    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+      return "'" .. v .. "'"
+    end
+    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+  else
+    return "table" == type( v ) and table.tostring( v ) or
+      tostring( v )
+  end
+end
+
+function table.key_to_str ( k )
+  if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
+    return k
+  else
+    return "[" .. table.val_to_str( k ) .. "]"
+  end
+end
+
+function table.tostring( tbl )
+  local result, done = {}, {}
+  for k, v in ipairs( tbl ) do
+    table.insert( result, table.val_to_str( v ) )
+    done[ k ] = true
+  end
+  for k, v in pairs( tbl ) do
+    if not done[ k ] then
+      table.insert( result,
+        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+    end
+  end
+  return "{" .. table.concat( result, "," ) .. "}"
+end
+
+HDFT_temp = OperatorToMatrix(HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT)
+HDFT_temp = Matrix.Sub(HDFT_temp, {1,10},{1,10})
+HDFT_temp = Chop(HDFT_temp, 1e-10)
+file = io.open("H_10x10.dat", "w")
+file:write(table.tostring(HDFT_temp))
+file:close()
+----------------------------------------------------------------------------------------------
+
+-- define some aditional operators
+print("--Define some additional operators--\n")
+
+OppSx    = Rotate(NewOperator("Sx",   NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppSy    = Rotate(NewOperator("Sy",   NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppSz    = Rotate(NewOperator("Sz",   NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppLz    = Rotate(NewOperator("Lz",   NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppJz    = Rotate(NewOperator("Jz",   NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+Oppldots_3d = Rotate(NewOperator("ldots",NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+Oppldots_2p = Rotate(NewOperator("ldots",NFermi,Index["Ni_2p_Up"],Index["Ni_2p_Dn"]),YtoZtriple)
+
+OppSsqr  = Rotate(NewOperator("Ssqr", NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppLsqr  = Rotate(NewOperator("Lsqr", NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+OppJsqr  = Rotate(NewOperator("Jsqr", NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Dn"]),YtoZtriple)
+
+OppN_Ni = NewOperator("Number",NFermi,Index["Ni"], Index["Ni"], {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1})
+OppN_Ligand     = NewOperator("Number",NFermi,Index["Ligand_d"], Index["Ligand_d"], {1,1,1,1,1,1,1,1,1,1})
+OppN_Ni_yz   = NewOperator("Number",NFermi,{2,3}, {2,3}, {1,1})
+OppN_Ni_xz   = NewOperator("Number",NFermi,{6,7}, {6,7}, {1,1})
+OppN_Ni_xy   = NewOperator("Number",NFermi,{0,1}, {0,1}, {1,1})
+OppN_Ni_x2y2 = NewOperator("Number",NFermi,{8,9}, {8,9}, {1,1})
+OppN_Ni_z2   = NewOperator("Number",NFermi,{4,5}, {4,5}, {1,1})
+
+
+OppN_Ni_3dUp = NewOperator("Number",NFermi,Index["Ni_3d_Up"],Index["Ni_3d_Up"],{1,1,1,1,1})
+OppN_Ni_3dDn = NewOperator("Number",NFermi,Index["Ni_3d_Dn"],Index["Ni_3d_Dn"],{1,1,1,1,1})
+
+OppN_Ni_eg  = OppN_Ni_x2y2 + OppN_Ni_z2
+OppN_Ni_t2g = OppN_Ni_yz + OppN_Ni_xz + OppN_Ni_xy
+
+OppD = OppN_Ni_eg + OppN_Ni_t2g
+
+
+-- dipole transition
+t=math.sqrt(1/2)
+-- 2p 3d dipole transition (XAS)
+Akm = {{1,-1,t},{1, 1,-t}}
+TXASxdag = Rotate(NewOperator("CF", NFermi, Index["Ni_3d_Up"], Index["Ni_3d_Dn"], Index["Ni_2p_Up"], Index["Ni_2p_Dn"], Akm), YtoZtriple)
+Akm = {{1,-1,t*I},{1, 1,t*I}}
+TXASydag = Rotate(NewOperator("CF", NFermi, Index["Ni_3d_Up"], Index["Ni_3d_Dn"], Index["Ni_2p_Up"], Index["Ni_2p_Dn"], Akm), YtoZtriple)
+Akm = {{1,0,1}}
+TXASzdag = Rotate(NewOperator("CF", NFermi, Index["Ni_3d_Up"], Index["Ni_3d_Dn"], Index["Ni_2p_Up"], Index["Ni_2p_Dn"], Akm), YtoZtriple)
+ 
+TXASrdag = t*(TXASxdag - I * TXASydag)
+TXASldag =-t*(TXASxdag + I * TXASydag)
+
+-- we can remove zero's from the dipole operator by chopping it
+TXASxdag.Chop()
+TXASydag.Chop()
+TXASzdag.Chop()
+TXASrdag.Chop()
+TXASldag.Chop() 
+
+-- L and R Polarizations, Z Propegation
+-----------------------------------------------------------------------
+k = {0, 0, 1}
+ev = {0, 1, 0}
+eh = {1, 0, 0}
+
+er = {t * (eh[1] - I * ev[1]),
+      t * (eh[2] - I * ev[2]),
+      t * (eh[3] - I * ev[3])}
+	  
+el = {-t * (eh[1] + I * ev[1]),
+      -t * (eh[2] + I * ev[2]),
+      -t * (eh[3] + I * ev[3])}
+
+TXASrdag_zprop = er[1] * TXASxdag + er[2] * TXASydag + er[3] * TXASzdag
+TXASldag_zprop = el[1] * TXASxdag + el[2] * TXASydag + el[3] * TXASzdag
+TXASrdag_zprop.Chop()
+TXASldag_zprop.Chop()
+-----------------------------------------------------------------------
+
+-- L and R Polarizations, Y Propegation
+-----------------------------------------------------------------------
+k = {0, 1, 0}
+ev = {1, 0, 0}
+eh = {0, 0, 1}
+
+er = {t * (eh[1] - I * ev[1]),
+      t * (eh[2] - I * ev[2]),
+      t * (eh[3] - I * ev[3])}
+	  
+el = {-t * (eh[1] + I * ev[1]),
+      -t * (eh[2] + I * ev[2]),
+      -t * (eh[3] + I * ev[3])}
+
+TXASrdag_yprop = er[1] * TXASxdag + er[2] * TXASydag + er[3] * TXASzdag
+TXASldag_yprop = el[1] * TXASxdag + el[2] * TXASydag + el[3] * TXASzdag
+TXASrdag_yprop.Chop()
+TXASldag_yprop.Chop()
+-----------------------------------------------------------------------
+
+-- L and R Polarizations, X Propegation
+-----------------------------------------------------------------------
+k = {1, 0, 0}
+ev = {0, 0, 1}
+eh = {0, 1, 0}
+
+er = {t * (eh[1] - I * ev[1]),
+      t * (eh[2] - I * ev[2]),
+      t * (eh[3] - I * ev[3])}
+	  
+el = {-t * (eh[1] + I * ev[1]),
+      -t * (eh[2] + I * ev[2]),
+      -t * (eh[3] + I * ev[3])}
+
+TXASrdag_xprop = er[1] * TXASxdag + er[2] * TXASydag + er[3] * TXASzdag
+TXASldag_xprop = el[1] * TXASxdag + el[2] * TXASydag + el[3] * TXASzdag
+TXASrdag_xprop.Chop()
+TXASldag_xprop.Chop()
+-----------------------------------------------------------------------
+
+
+
+-- DEFINE ALL HAMILTONIANS
+-- define the Intermediate State Hamiltonian
+print("--Define Intermediate State Hamiltonian--\n")
+Hamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT
+            + F0dd * OppF0 + F2dd * OppF2 + F4dd * OppF4
+            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d
+
+Hamiltonian = Hamiltonian + Hx * OppSx + Hy * OppSy + Hz * OppSz
+
+Hamiltonian = Hamiltonian/2
+Hamiltonian = Hamiltonian + ConjugateTranspose(Hamiltonian)
+
+edinit = (10*Delta-nd*(19+nd)*Udd/2)/(10+nd)
+eLinit = nd*((1+nd)*Udd/2-Delta)/(10+nd)
+
+OperatorSetTrace(Hamiltonian,edinit,Index["Ni_3d"])
+OperatorSetTrace(Hamiltonian,eLinit,Index["Ligand_d"])
+
+-- define the Final State Hamiltonian           
+print("--Define XAS-Hamiltonian--\n")
+XASHamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT
+            + F0dd * OppF0 + F2dd * OppF2 + F4dd * OppF4
+            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d
+XASHamiltonian = XASHamiltonian + zeta_2p * Oppldots_2p
+            + F0pd * OppUpdF0 + F2pd * OppUpdF2 + G1pd * OppUpdG1 + G3pd * OppUpdG3
+
+XASHamiltonian = XASHamiltonian + Hx * OppSx + Hy * OppSy + Hz * OppSz
+
+XASHamiltonian = XASHamiltonian/2
+XASHamiltonian = XASHamiltonian + ConjugateTranspose(XASHamiltonian)
+             
+epfinal = (10*Delta + (1+nd)*(nd*Udd/2-(10+nd)*Upd)) / (16+nd)
+edfinal = (10*Delta - nd*(31+nd)*Udd/2-90*Upd) / (16+nd)
+eLfinal = ((1+nd)*(nd*Udd/2+6*Upd) - (6+nd)*Delta) / (16+nd)
+
+OperatorSetTrace(XASHamiltonian,epfinal,Index["Ni_2p"])
+OperatorSetTrace(XASHamiltonian,edfinal,Index["Ni_3d"])
+OperatorSetTrace(XASHamiltonian,eLfinal,Index["Ligand_d"])
+
+print("edinit = "..edinit.." eV")
+print("eLinit = "..eLinit.." eV")
+print("edfinal = "..edfinal.." eV")
+print("eLfinal = "..eLfinal.." eV")
+
+print("\n--Compute eigenstates--")
+-- we now can create the lowest Npsi eigenstates:
+Npsi=5
+print("Npsi")
+print(Npsi)
+StartRestrictions = {NFermi, 0, 
+{DeterminantString(NFermi,Index["Ni_3d"],Index["Ligand_d"]),10+nd,10+nd},
+{DeterminantString(NFermi,Index["Ni_2p"]),6,6}}
+
+psiList = Eigensystem(Hamiltonian, StartRestrictions, Npsi, {{'Zero',1e-06},{'Epsilon',1e-06}})
+psiList = Chop(psiList)
+print(StartRestrictions)
+
+-- print of some expectation values
+Hamiltonian.Name = "<E>"
+OppSsqr.Name = "<S^2>"
+OppLsqr.Name = "<L^2>"
+OppJsqr.Name = "<J^2>"
+OppSz.Name = "<S_z^3d>"
+OppLz.Name = "<L_z^3d>"
+OppJz.Name = "<J_z^3d>"
+Oppldots_3d.Name = "<l.s>"
+OppN_Ni_eg.Name = "<Neg_Ni>"
+OppN_Ni_t2g.Name = "<Nt2g_Ni>"
+OppN_Ni.Name = "<N_Ni>"
+OppN_Ligand.Name = "<N_L>"
+OppD = NewOperator("Number", NFermi, Index["Ni_3d"], Index["Ni_3d"], {1,1,1,1,1,1,1,1,1,1})
+OppD.Name = "<N_Ni_d>"
+
+OppN_Ni_yz.Name = "<3d_yz>"
+OppN_Ni_xz.Name = "<3d_xz>"
+OppN_Ni_xy.Name = "<3x_xy>"
+OppN_Ni_x2y2.Name = "<3d_x2y2>"
+OppN_Ni_z2.Name = "<3x_z2>"
+
+OppN_Ni_3dUp.Name = "<N_Ni_dUp>"
+OppN_Ni_3dDn.Name = "<N_Ni_dDn>"
+
+oppList={Hamiltonian, OppSz, OppLz, OppJz, OppSsqr, OppLsqr, OppJsqr, 
+-- OppN_Ni_eg, OppN_Ni_t2g, OppN_Ni_3dUp, OppN_Ni_3dDn, 
+OppN_Ni_yz, OppN_Ni_xz, OppN_Ni_xy, OppN_Ni_x2y2, OppN_Ni_z2,
+OppD, OppN_Ni, OppN_Ligand}
+
+
+-- Making sure that all thermally accessible states are included in psiList
+T = 293 * EnergyUnits.Kelvin.value
+Egrd = psiList[1]*Hamiltonian*psiList[1]
+dZ = exp(-(psiList[#psiList] * Hamiltonian * psiList[#psiList] - Egrd)/T)
+print("\ndZ")
+print(dZ)
+while dZ > 0.01 do
+    print("\n--Compute eigenstates--")
+   
+    -- we now can create the lowest Npsi eigenstates:
+    Npsi = Npsi + 4
+    print("Npsi")
+    print(Npsi)
+    
+    psiList = Eigensystem(Hamiltonian, StartRestrictions, Npsi, {{'Zero',1e-06},{'Epsilon',1e-06}})
+    psiList = Chop(psiList)
+    PrintExpectationValues(psiList,oppList,{{"ColWidth",10}})
+    Egrd = psiList[1]*Hamiltonian*psiList[1]
+    dZ = exp(-(psiList[#psiList] * Hamiltonian * psiList[#psiList] - Egrd)/T)
+
+    print("\ndZ")
+    print(dZ)
+end
+
+print("\n--Initial State Energies--")
+Energies = {}
+for i = 1 ,#psiList do
+    table.insert(Energies, psiList[i] * Hamiltonian * psiList[i])
+end
+print(Energies)
+print()
+
+
+print("--Create the Spectra--\n")
+
+-- Constant Lorentzian Broadening --
+------------------------------------
+Gamma = 0.1
+------------------------------------
+----------- For Sticks -------------
+Emin = -50
+Emax = 50
+NE= 4000
+
+epsilon = 0.00001
+
+Spectra_z=0 -- Linearly Polarized along z
+Spectra_x=0 -- Linearly Polarized along x
+Spectra_y=0 -- Linearly Polarized along y
+Spectra_r_z=0 -- Right Circularly Polarized, propegating along z
+Spectra_l_z=0 -- Left Circularly Polarized,  propegating along z
+Spectra_r_y=0 -- Right Circularly Polarized, propegating along y
+Spectra_l_y=0 -- Left Circularly Polarized,  propegating along y
+Spectra_r_x=0 -- Right Circularly Polarized, propegating along x
+Spectra_l_x=0 -- Left Circularly Polarized,  propegating along x
+Egrd = psiList[1]*Hamiltonian*psiList[1]
+T = 293 * EnergyUnits.Kelvin.value
+Z = 0
+
+for j=1, Npsi do
+    dZ = Complex.Re(exp(-(psiList[j] * Hamiltonian * psiList[j] - Egrd)/T))
+    print(dZ)
+    if dZ < 0.01 then break end
+    Z  = Z + dZ
+    Spectra_z = Spectra_z + CreateSpectra(XASHamiltonian, TXASzdag, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_x = Spectra_x + CreateSpectra(XASHamiltonian, TXASxdag, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_y = Spectra_y + CreateSpectra(XASHamiltonian, TXASydag, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_r_z = Spectra_r_z + CreateSpectra(XASHamiltonian, TXASrdag_zprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_l_z = Spectra_l_z + CreateSpectra(XASHamiltonian, TXASldag_zprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_r_y = Spectra_r_y + CreateSpectra(XASHamiltonian, TXASrdag_yprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_l_y = Spectra_l_y + CreateSpectra(XASHamiltonian, TXASldag_yprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_r_x = Spectra_r_x + CreateSpectra(XASHamiltonian, TXASrdag_xprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+    Spectra_l_x = Spectra_l_x + CreateSpectra(XASHamiltonian, TXASldag_xprop, psiList[j], {{"Emin",Emin}, {"Emax",Emax}, {"NE",NE}, {"Gamma",Gamma}, {"epsilon",epsilon}})*math.exp(-(psiList[j]*Hamiltonian*psiList[j] - Egrd)/T)
+end
+Spectra_z = Spectra_z/Z
+Spectra_x = Spectra_x/Z
+Spectra_y = Spectra_y/Z
+Spectra_r_z = Spectra_r_z/Z
+Spectra_l_z = Spectra_l_z/Z
+Spectra_r_y = Spectra_r_y/Z
+Spectra_l_y = Spectra_l_y/Z
+Spectra_r_x = Spectra_r_x/Z
+Spectra_l_x = Spectra_l_x/Z
+
+XASSpectra = (Spectra_z+Spectra_x+Spectra_y)/3
+XASSpectra.Print({{"file", "XAS_sticks.dat"}})
+
+XASSpectra.Broaden(0, 0.5)
+XASSpectra.Print({{"file", "XAS.dat"}})
+
+Spectra_z.Print({{"file", "XAS_zpol_sticks.dat"}})
+Spectra_x.Print({{"file", "XAS_xpol_sticks.dat"}})
+Spectra_y.Print({{"file", "XAS_ypol_sticks.dat"}})
+Spectra_r_z.Print({{"file", "XAS_rpol_zdir_sticks.dat"}})
+Spectra_l_z.Print({{"file", "XAS_lpol_zdir_sticks.dat"}})
+Spectra_r_y.Print({{"file", "XAS_rpol_ydir_sticks.dat"}})
+Spectra_l_y.Print({{"file", "XAS_lpol_ydir_sticks.dat"}})
+Spectra_r_x.Print({{"file", "XAS_rpol_xdir_sticks.dat"}})
+Spectra_l_x.Print({{"file", "XAS_lpol_xdir_sticks.dat"}})
+
+Spectra_z.Broaden(0, 0.5)
+Spectra_x.Broaden(0, 0.5)
+Spectra_y.Broaden(0, 0.5)
+Spectra_r_z.Broaden(0, 0.5) 
+Spectra_l_z.Broaden(0, 0.5)
+Spectra_r_y.Broaden(0, 0.5)
+Spectra_l_y.Broaden(0, 0.5)
+Spectra_r_x.Broaden(0, 0.5)
+Spectra_l_x.Broaden(0, 0.5)
+
+Spectra_z.Print({{"file", "XAS_zpol.dat"}})
+Spectra_x.Print({{"file", "XAS_xpol.dat"}})
+Spectra_y.Print({{"file", "XAS_ypol.dat"}})
+Spectra_r_z.Print({{"file", "XAS_rpol_zdir.dat"}})
+Spectra_l_z.Print({{"file", "XAS_lpol_zdir.dat"}})
+Spectra_r_y.Print({{"file", "XAS_rpol_ydir.dat"}})
+Spectra_l_y.Print({{"file", "XAS_lpol_ydir.dat"}})
+Spectra_r_x.Print({{"file", "XAS_rpol_xdir.dat"}})
+Spectra_l_x.Print({{"file", "XAS_lpol_xdir.dat"}})
+
+print("Finished")
+

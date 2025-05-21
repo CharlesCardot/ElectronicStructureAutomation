@@ -1,13 +1,17 @@
+import numpy as np
+import matplotlib.pyplot as plt
 import os
 import sys
 
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
-import CharlesFunctions as CF
 from pathlib import Path
 
-import numpy as np
+path_to_file = Path(os.path.realpath(__file__))
+automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 3]
 
-
+utils_path = parent_dir.parents[0] / "utils"
+sys.path.append(str(utils_path))
+import CharlesFunctions as CF
 
 with open("testing.out","r") as f:
     data = [x.strip() for x in f.readlines()]

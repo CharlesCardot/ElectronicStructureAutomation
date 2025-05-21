@@ -28,7 +28,7 @@ rename_files() {
     done
 }
 
-entry="TiO"
+entry="NiO"
 echo $entry
 
 if [ -d output/$entry ]; then

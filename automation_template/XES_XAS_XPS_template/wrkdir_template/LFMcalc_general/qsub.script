@@ -7,8 +7,6 @@
 cd $PBS_O_WORKDIR
 
 # Run to find rho_d and lowest Npsi
-sed -i -e "s/DDDD/2.0/g" "script.Quanty"
-sed -i -e "s/UUUU/5.0/g" "script.Quanty"
 quanty script.Quanty &> testing.out
 python edit_script.py
 
@@ -18,6 +16,6 @@ sed -i '/Delta =/s/Delta = [^,]*/Delta = DDDD/' "template.quanty"
 sed -i '/Udd =/s/Udd = [^,]*/Udd = UUUU/' "template.quanty"
 mv template.quanty QueueStuff/10elec_0.0001_testUD/template.quanty
 
-# # Run batch jobs
+# # Run batch jobs over charge transfer params
 # cd QueueStuff/10elec_0.0001_testUD/
 # ./execute.sh

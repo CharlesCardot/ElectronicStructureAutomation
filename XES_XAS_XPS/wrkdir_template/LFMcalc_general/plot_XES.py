@@ -13,7 +13,7 @@ utils_path = parent_dir.parents[0] / "utils"
 sys.path.append(str(utils_path))
 import CharlesFunctions as CF
 
-lleft = -25
+left = -25
 right = 10
 
 data = np.loadtxt("XES_xpol.dat",skiprows=5).T

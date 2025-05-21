@@ -1,0 +1,129 @@
+doit
+
+---- real space grid for pictures of WFs ---------------------
+
+WF_grid_basis conv
+WF_grid_directions
+2 0 0
+0 2 0
+0 0 2
+WF_grid_subdivision  1 1 1
+
+-------------------------------------------------
+ham_cutoff 18
+-- the thresholds need to be 0, otherwise the result is symmetry braking
+-- the z^2 orbital has different values for the same hopping from the x^2-y^2 orbital
+-- cutting them by value leads to a different behaviour of the z^2 from the x^2-y^2 orbital
+-- and by hybridization the pz will be different from the px/py or the dxy from the dxz/dyz
+WF_ham_threshold 0
+WF_coeff_threshold 0
+WF_write_coeff_stats on
+ham_write_t_stats on
+
+----- ham export grid --------
+
+k_grid_basis prim
+k_grid_directions
+1 0 0
+0 1 0
+0 0 1
+k_grid_subdivision  1 1 1
+k_grid_incl_periodic_points off
+
+wandef
+on
+  name Ni_1_3dxy
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d-2
+    fac    1
+wandef
+on
+  name Ni_1_3dyz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1 
+    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d-1
+    fac    1
+wandef
+on
+  name Ni_1_3dz2
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+0
+    fac    1
+wandef
+on
+  name Ni_1_3dxz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+1
+    fac    1
+wandef
+on
+  name Ni_1_3dx2-y2
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+2
+    fac    1
+wandef
+on
+  name O_2_2py
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p-1
+    fac    1
+wandef
+on
+  name O_2_2pz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p+0
+    fac    1
+wandef
+on
+  name O_2_2px
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p+1
+    fac    1

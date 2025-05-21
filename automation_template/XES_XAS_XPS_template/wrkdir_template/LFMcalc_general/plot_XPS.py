@@ -1,9 +1,17 @@
-import sys
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
-import CharlesFunctions as CF
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import sys
+
+from pathlib import Path
+
+path_to_file = Path(os.path.realpath(__file__))
+automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 3]
+
+utils_path = parent_dir.parents[0] / "utils"
+sys.path.append(str(utils_path))
+import CharlesFunctions as CF
 
 left = -50
 right = 50
@@ -19,7 +27,6 @@ plt.ylabel('Intensity (arb. units)', fontsize = 20)
 plt.title('NAME 2p XPS', fontsize = 20)
 
 plt.tight_layout()
-plt.legend()
 plt.show()
 
 

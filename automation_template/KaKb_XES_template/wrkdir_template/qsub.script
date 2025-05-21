@@ -49,9 +49,9 @@ quanty 1_RunQSUBNAMEFPLO_WF.Quanty &> testing_1.out
 rm DFT/+wancoeff
 
 cd "LFMcalc_Ka/"
-python write_LFMcalc_XES.py
+python write_LFMcalc_general.py
 qsub qsub.script
 
 cd "../LFMcalc_Kb/"
-python write_LFMcalc_XES.py
+python write_LFMcalc_general.py
 qsub qsub.script

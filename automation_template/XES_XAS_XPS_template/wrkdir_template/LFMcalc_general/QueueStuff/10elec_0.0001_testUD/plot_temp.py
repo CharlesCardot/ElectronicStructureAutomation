@@ -89,10 +89,10 @@ for D in range(len(Delta)):
         
     ax[0].legend(fontsize=10, title=legend_title)
     ax[0].set_ylabel("Intensity (arb. units)", fontsize=15)
-    fig.suptitle("CuO XAS, XPS, and XES", fontsize=20, y=0.98)
+    fig.suptitle("NAME XAS, XPS, and XES", fontsize=20, y=0.98)
     plt.tight_layout()
     # plt.savefig("NAME_CT_param_explore.png", dpi=100)
-    # print("Successfully created", "CuO_CT_param_explore.png")
+    # print("Successfully created", "NAME_CT_param_explore.png")
     plt.show()
 
 

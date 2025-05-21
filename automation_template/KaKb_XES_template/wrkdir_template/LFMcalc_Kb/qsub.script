@@ -7,7 +7,5 @@
 cd $PBS_O_WORKDIR
 
 # Run to find rho_d and lowest Npsi
-sed -i -e "s/DDDD/2.0/g" "3_XAS.Quanty"
-sed -i -e "s/UUUU/5.0/g" "3_XAS.Quanty"
-quanty 3_XAS.Quanty &> testing.out
-python edit_3_XAS.py
+quanty 3_XES.Quanty &> testing.out
+python edit_3_XES.py

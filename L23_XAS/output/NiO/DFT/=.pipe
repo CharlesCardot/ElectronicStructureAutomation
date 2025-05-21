@@ -1,0 +1,62 @@
+# go to symmetry menu
+@+@
+# title
+@c@NiO
+# enter spacegroup select box - 225
+@s@
+@225@
+@x@
+# structure type - crystal
+@t@
+@c@
+@x@
+# lenth units - angstroem
+@u@
+@a@
+@x@
+# lattice constants;
+@l@ 4.21661958 4.21661958 4.21661958
+# set axis angles
+@a@ 90.00000000 90.00000000 90.00000000
+# setup Wyckoff positions
+@n@2
+# Now, give list of ALL !!! Wyckoff positions.
+@1@ Ni @ 0.00000000 0.00000000 0.00000000
+@2@ O @ 0.00000000 0.00000000 0.50000000
+#
+# NOW CALL UPDATE, NEVER FORGET THIS!!!
+#
+@+@
+# leave symmetry menu
+@x@
+# back in main menu
+# This was the symmetry setup, and now we follow our advise to create
+# the default =.in input by using the REBUILD-action.
+# (The space before the 'e' opens the alternative menu bar.)
+@ e@
+# now we have the default input, and are still in the main menu
+
+# Set the number of k-points
+@k@ 10 10 10
+# Set the xc-potential version
+# first enter select box
+@v@
+# select via search
+!Perdew Wang 92!
+# leave select box, go back to main menu
+@x@
+
+# Set the relativistic mode:
+@r@
+# Select by search, please note that the parentheses indicating the hotkey
+# are not considered in search mode.
+# (Have a look at the select box interactively.)
+!scalar relativistic!
+# leave select box
+@x@
+# Set number of iterations
+@n@ 100
+
+
+# last action must be
+@q@

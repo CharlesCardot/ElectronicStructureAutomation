@@ -1,5 +1,12 @@
 import sys
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
+from pathlib import Path
+
+path_to_file = Path(os.path.realpath(__file__))
+automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 2]
+
+utils_path = parent_dir.parents[0] / "utils"
+sys.path.append(str(utils_path))
 import CharlesFunctions as CF
 
 import numpy as np
@@ -11,7 +18,6 @@ import os
 
 import plot_utils
 
-from pathlib import Path
 from matplotlib.ticker import ScalarFormatter
 
 from pymatgen.vis.structure_vtk import StructureVis
@@ -58,8 +64,7 @@ BSandLDOS_pp_dict = {
 }
 
 ## Material and File Management
-# parent_dir should be one directory deeper than the "automation" directory, 
-# such as the automation_CrSBr directory
+# parent_dir should be one directory deeper than the "automation" directory
 path_to_file = Path(os.path.realpath(__file__))
 automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
 parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 3]

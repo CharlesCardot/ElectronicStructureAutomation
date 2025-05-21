@@ -1,0 +1,66 @@
+{"id":"IGrC0LfYKfET","time":1747869401,"expires":1747912601,"event":"message","topic":"macchiatoorderup","message":"Done running part 0 of NiO_DFT"}
+Continuing with the calculation...
+Wyckoff positions
+[['Ni', '1'], ['O', '2']]
+
+Transition Metal Chunks
+TM Orbital Center -1.1373613731308962
+Chunk: 0 Left Edge: -18.7987988 Right Edge: -18.43843844 Weight: 3.598134423545076e-79
+Chunk: 1 Left Edge: -7.90790791 Right Edge: -3.22322322 Weight: 0.11794477258244943
+Chunk: 2 Left Edge: -2.58258258 Right Edge: 1.22122122 Weight: 0.868602110442709
+Chunk: 3 Left Edge: 11.31131131 Right Edge: 13.35335335 Weight: 4.82853980300937e-22
+TM_emin -8.41
+TM_emax 1.72
+
+Ligand Chunks
+Ligand Orbital Center -2.5808097334380493
+Chunk: 0 Left Edge: -18.67867868 Right Edge: -18.67867868 Weight: 0.0
+Chunk: 1 Left Edge: -7.94794795 Right Edge: -3.02302302 Weight: 0.6956440119904423
+Chunk: 2 Left Edge: -2.46246246 Right Edge: 1.22122122 Weight: 0.1762754969208216
+Chunk: 3 Left Edge: 2.74274274 Right Edge: 8.82882883 Weight: 0.04015119704647381
+Chunk: 4 Left Edge: 9.10910911 Right Edge: 18.63863864 Weight: 6.839891767631328e-16
+Ligand_emin -8.45
+Ligand_emax 1.72
+
+Atom Sites
+[['1', 'Ni'], ['2', 'O']]
+{"id":"aiWVj3MYtWWD","time":1747869466,"expires":1747912666,"event":"message","topic":"macchiatoorderup","message":"Done running part 1 of NiO_DFT"}
+Wyckoff positions
+[['Ni', '1'], ['O', '2']]
+
+Atom Sites
+[['1', 'Ni', '-0.000000000000000', '-0.000000000000000', '-0.000000000000000'], ['2', 'O', '-0.000000000000000', '-0.000000000000000', '-3.984128089742748']]
+
+TM_FPLO_XYZ
+-0.000000000000000 , -0.000000000000000 , -0.000000000000000
+
+cluster_radius
+4.62
+Using default Delta and Udd values of 2.0 eV and 5.0 eV respectively.
+139972.macchiato
+Wyckoff positions
+[['Ni', '1'], ['O', '2']]
+
+Atom Sites
+[['1', 'Ni', '-0.000000000000000', '-0.000000000000000', '-0.000000000000000'], ['2', 'O', '-0.000000000000000', '-0.000000000000000', '-3.984128089742748']]
+
+TM_FPLO_XYZ
+-0.000000000000000 , -0.000000000000000 , -0.000000000000000
+
+cluster_radius
+4.62
+Using default Delta and Udd values of 2.0 eV and 5.0 eV respectively.
+139973.macchiato
+Wyckoff positions
+[['Ni', '1'], ['O', '2']]
+
+Atom Sites
+[['1', 'Ni', '-0.000000000000000', '-0.000000000000000', '-0.000000000000000'], ['2', 'O', '-0.000000000000000', '-0.000000000000000', '-3.984128089742748']]
+
+TM_FPLO_XYZ
+-0.000000000000000 , -0.000000000000000 , -0.000000000000000
+
+cluster_radius
+4.62
+Using default Delta and Udd values of 2.0 eV and 5.0 eV respectively.
+139974.macchiato

@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 The goal of this script is to check to see that there is only one wyckoff positon for the
 transition metal, and that it is surrounded by only a single ligand type.
 
-This script is not set up to properly handle multiple ligand types or more than
+This automation pipeline is not set up to properly handle multiple ligand types or more than
 one wyckoff position, and if these two conditions are not satisfied the entire pipeline
 should abort, because human intervention is required to appropriately address this system
 '''

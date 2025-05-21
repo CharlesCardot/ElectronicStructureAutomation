@@ -21,17 +21,6 @@ do
         echo 'cd $PBS_O_WORKDIR' >> qsub.script
         echo 'quanty input_file.quanty &> testing.out' >> qsub.script
 
-		# WARNING, PATHS PROBABLY DONT WORK FOR THIS ANYMORE
-		# ALSO, THE IMAGE GENERATION DIDNT REALLY WORK TO BEGIN WITH
-        #Dvals_array=($Dvals)
-        #Uvals_array=($Uvals)
-        #if [ $D == ${Dvals_array[-1]} ] && [ $U == ${Uvals_array[-1]} ]
-        #then
-        #    echo 'cd ..' >> qsub.script
-        #    echo 'python plot_temp.py &> plot_temp.out' >> qsub.script
-        #    echo 'cp NAME_CT_param_explore.png /home/ccardot3/QuantyScripts/automation/output_images/' >> qsub.script
-        #fi
-
         qsub -q max_24 qsub.script 
         cd ..
 done

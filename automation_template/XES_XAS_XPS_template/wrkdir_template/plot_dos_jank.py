@@ -1,12 +1,18 @@
 import os
 import sys
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
-import CharlesFunctions as CF
 import json
 from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+path_to_file = Path(os.path.realpath(__file__))
+automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 2]
+
+utils_path = parent_dir.parents[0] / "utils"
+sys.path.append(str(utils_path))
+import CharlesFunctions as CF
 
 NAME = "TbMn6Sn6"
 dft_dir = "DFT"

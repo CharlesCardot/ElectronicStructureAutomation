@@ -16,6 +16,6 @@ sed -i '/Delta =/s/Delta = [^,]*/Delta = DDDD/' "template.quanty"
 sed -i '/Udd =/s/Udd = [^,]*/Udd = UUUU/' "template.quanty"
 mv template.quanty QueueStuff/10elec_0.0001_testUD/template.quanty
 
-# # Run batch jobs
+# # Run batch jobs over charge transfer params
 # cd QueueStuff/10elec_0.0001_testUD/
 # ./execute.sh

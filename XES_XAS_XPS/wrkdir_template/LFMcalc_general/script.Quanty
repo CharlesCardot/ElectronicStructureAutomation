@@ -168,6 +168,8 @@ print("Udd fit to exp= "..Udd.." eV")
 print("Upd fit to exp = "..Upd.." eV")
 print("Usd fit to exp = "..Usd.." eV")
 print("Bz = "..Bz.." eV")
+print("Hx = "..Hx.." eV")
+print("Hy = "..Hy.." eV")
 print("Hz = "..Hz.." eV")
 print("zeta_3d = "..zeta_3d.." eV")
 print("zeta_2p = "..zeta_2p.." eV")
@@ -399,7 +401,9 @@ OperatorSetTrace(GS_Hamiltonian,eLgs,Index["Ligand_d"])
 print("--Define 1s Core Hole State Hamiltonian--\n")
 s_hole_Hamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT
             + F0dd * OppF0 + F2dd * OppF2 + F4dd * OppF4
-            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d + Hz * OppSz
+            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d
+
+s_hole_Hamiltonian = s_hole_Hamiltonian + Hx * OppSx + Hy * OppSy + Hz * OppSz
 
 s_hole_Hamiltonian = s_hole_Hamiltonian + OppF0sd * F0sd + OppG2sd * G2sd
 s_hole_Hamiltonian = s_hole_Hamiltonian/2
@@ -417,7 +421,9 @@ OperatorSetTrace(s_hole_Hamiltonian,eLinter,Index["Ligand_d"])
 print("--Define XAS-Hamiltonian--\n")
 p_hole_Hamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT
             + F0dd * OppF0 + F2dd * OppF2 + F4dd * OppF4
-            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d + Hz * OppSz
+            + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d
+
+p_hole_Hamiltonian = p_hole_Hamiltonian + Hx * OppSx + Hy * OppSy + Hz * OppSz
 
 p_hole_Hamiltonian = p_hole_Hamiltonian + zeta_2p * Oppldots_2p
             + F0pd * OppUpdF0 + F2pd * OppUpdF2 + G1pd * OppUpdG1 + G3pd * OppUpdG3

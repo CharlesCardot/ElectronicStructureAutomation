@@ -1,11 +1,13 @@
 import sys
+import os
 from pathlib import Path
 
 path_to_file = Path(os.path.realpath(__file__))
 automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
-parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 2]
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 3]
 
 utils_path = parent_dir.parents[0] / "utils"
+print(utils_path)
 sys.path.append(str(utils_path))
 import CharlesFunctions as CF
 
@@ -14,7 +16,6 @@ import matplotlib.pyplot as plt
 import scipy
 import datetime
 import re
-import os
 
 import plot_utils
 
@@ -77,6 +78,9 @@ import json
 with open(parent_dir / str("materials/%s/%s.inp" % (NAME,NAME)),"r") as f:
     material_input = json.load(f)
 
+if "NAME" not in material_input:
+    material_input["NAME"] = NAME
+
 # Add name to default plot_params
 plot_params_dict.update({"NAME": NAME})
 
@@ -92,15 +96,20 @@ plot_utils.stitch_images_horizontal(image_paths, output_path)
 plot_utils.make_BandStructAndLdosPlots(Path("DFT"), material_input, BSandLDOS_pp_dict)
 
 # L23 XAS Spectra Plots
-plot_utils.make_QuantyPlots_XAS("LFMcalc_XAS", {**L23_pp_dict, **plot_params_dict})
+plot_utils.make_QuantyPlots_XAS("LFMcalc_general", {**L23_pp_dict, **plot_params_dict})
 
-# Crystal Visualization
-plot_utils.make_crystalvisplots(structure, {"direction": "x", "output_filename": "crystal_xdir.png"})
-plot_utils.make_crystalvisplots(structure, {"direction": "y", "output_filename": "crystal_ydir.png"})
-plot_utils.make_crystalvisplots(structure, {"direction": "z", "output_filename": "crystal_zdir.png"})
-image_paths = ["crystal_zdir.png", "crystal_ydir.png", "crystal_xdir.png"]
-output_path = "stitched_crystal_image.png"
-plot_utils.stitch_images_horizontal(image_paths, output_path)
+# This code visualizes the crystal structure, similar to what you might use Vesta, JMOL, or Avogadro for,
+# but it requires a custom pymatgen version and it's easier for a user to just do the
+# visualization with their own favorite software
+#######################################################################################################
+# # Crystal Visualization
+# plot_utils.make_crystalvisplots(structure, {"direction": "x", "output_filename": "crystal_xdir.png"})
+# plot_utils.make_crystalvisplots(structure, {"direction": "y", "output_filename": "crystal_ydir.png"})
+# plot_utils.make_crystalvisplots(structure, {"direction": "z", "output_filename": "crystal_zdir.png"})
+# image_paths = ["crystal_zdir.png", "crystal_ydir.png", "crystal_xdir.png"]
+# output_path = "stitched_crystal_image.png"
+# plot_utils.stitch_images_horizontal(image_paths, output_path)
+#######################################################################################################
 
 # Meta Data
 text = f"""
@@ -121,7 +130,8 @@ ex: (z,0,+1) = photon propegating along z-axis with
 plot_utils.text_to_image(text = text, output_path = "header.png", font_size=60)
 
 image_paths = ["header.png", "L23_composite.png"]
-image_paths = image_paths + ["stitched_crystal_image.png", "stitched_SCFconv.png", "bs_and_ldos.png"]
+# image_paths = image_paths + ["stitched_crystal_image.png", "stitched_SCFconv.png", "bs_and_ldos.png"]
+image_paths = image_paths + ["stitched_SCFconv.png", "bs_and_ldos.png"]
 output_pdf_path = f"{NAME}_summary.pdf"
 plot_utils.convert_images_to_pdf(image_paths, output_pdf_path)
 plot_utils.move_png_files(folder_name = f"{NAME}_plots")
