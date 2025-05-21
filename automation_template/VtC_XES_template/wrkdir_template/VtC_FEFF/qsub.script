@@ -6,6 +6,8 @@
 #PBS -V
 cd $PBS_O_WORKDIR
 
+set -e  # Exit immediately if a command returns a non-zero status
+
 # Iterate over each folder in the current directory
 for folder in */; do 
 	if [[ $folder != "VtC_template/" ]]; then

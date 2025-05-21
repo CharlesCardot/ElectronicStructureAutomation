@@ -12,6 +12,8 @@
 ########################################
 cd $PBS_O_WORKDIR
 
+set -e  # Exit immediately if a command returns a non-zero status
+
 workdir=$(pwd)
 material=$(basename "$workdir")
 
