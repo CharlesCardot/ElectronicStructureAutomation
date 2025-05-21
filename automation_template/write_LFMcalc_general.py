@@ -132,12 +132,12 @@ replacement_dict["TM_ZETA_3P"] = TM_ZETA_3P
 replacement_dict["TM_ZETA_3D"] = TM_ZETA_3D
 
 
+# For calculating polarized spectra (ex: under external magnetic field)
 if "TM_MAG_DIR" in material_input:
     TM_MAG_DIR = np.asarray(material_input["TM_MAG_DIR"])
     TM_MAG_DIR = np.round(TM_MAG_DIR / np.sum(TM_MAG_DIR), 2)
     TM_MAG_DIR = "{" + f"{TM_MAG_DIR[0]}, {TM_MAG_DIR[1]}, {TM_MAG_DIR[2]}" + "}"
     replacement_dict["TM_MAG_DIR"] = TM_MAG_DIR 
-
 if "TM_H_MAG" in material_input:
     replacement_dict["TM_H_MAG"] = str(material_input["TM_H_MAG"])
 
@@ -145,6 +145,8 @@ if "DDDD" in material_input and "UUUU" in material_input:
     replacement_dict["DDDD"] = str(material_input["DDDD"])
     replacement_dict["UUUU"] = str(material_input["UUUU"])
 else:
+    replacement_dict["DDDD"] = str(2.0)
+    replacement_dict["UUUU"] = str(5.0)
     print('Using default Delta and Udd values of 2.0 eV and 5.0 eV respectively.')
 
 # Fill in all the placeholders
