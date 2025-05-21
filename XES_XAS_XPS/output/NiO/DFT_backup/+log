@@ -1,0 +1,18 @@
+Pipe mode initialized
+Pipemode input line 2:
+  Entering/executing menu entry '(B)andplot' in screen 'MAIN MENU'
+
+Pipemode input line 3:
+  item '(B)andstructure plot' new value '+' in screen 'BANDPLOT'
+
+Pipemode input line 4:
+  item '(W)eights' new value '+' in screen 'BANDPLOT'
+
+Pipemode input line 4:
+  Entering/executing menu entry 'e(X)it' in screen 'BANDPLOT'
+
+Pipemode input line 5:
+  Entering/executing menu entry '(Q)uit/save' in screen 'MAIN MENU'
+
+SUCCESS
+Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_UNDERFLOW_FLAG IEEE_DENORMAL

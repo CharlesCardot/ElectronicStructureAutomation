@@ -1,0 +1,743 @@
+########################################################################
+# this file is part of the FPLO bandstructure package
+# it was created automatically
+# please dont delete this file nor
+# edit it, unless you really know what you are doing
+# any changes added by you may be lost if this file is recreated
+# by FPLO (which is the normal behaviour )
+# so keep duplicates of your changes somewhere else
+#
+########################################################################
+
+
+
+section header{
+
+    struct {char[*] mainversion;char[*] subversion;} version
+    ={"14.00","M-CPA"};
+
+};
+
+section Data{
+
+  struct{
+     char[*] screenname;
+     char[*] filename;
+     struct {
+        char[*] action;
+        char[*] menubarentry;
+        char[*] actionname;
+        }menus[*];
+     struct{
+        char[*] action;
+        char[*] variablename;
+        char[*] defaultvalue;
+        char[*] fieldname;
+        int namepos;
+        int fieldoffset;
+        int fieldwidth;
+        char[*] testflags;
+        char[*] testset[*];
+        real intervalleft;
+        real intervalright;
+        }entries[*];
+     }screens[*]=
+  {
+     {"MAIN MENU"
+     ,"=.in"
+          ,{
+              {"MAIN | MAINQUIT","@(q)uit/save",""}
+             ,{"MAIN | MAINEXIT","e@(x)it/discard",""}
+             ,{"MAIN | EXTERNEDIT","@(e)xtern edit",""}
+             ,{"MAIN | SUBMENU","@(+) Symmetry","SYMMETRY MENU"}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+             ,{"ALT  | SUBMENU","@(B)andplot","BANDPLOT"}
+             ,{"ALT  | SUBMENU","@(l)SDA+U","LSDA+U"}
+             ,{"ALT  | SUBMENU","O@(p)C","OPC"}
+             ,{"ALT  | SUBMENU","@(F)orces","FORCES"}
+             ,{"ALT  | SUBMENU","@(m)esh","MESH DEFINITION"}
+             ,{"ALT  | RESTORE","@(R)estore",""}
+             ,{"ALT  | REBUILD","R@(e)create","=.in"}
+             ,{"ALT  | EOL","",""}
+             ,{"ALT  | SUBMENU","@(I)nitial spinsplit","INITIAL SPINSPLIT"}
+             ,{"ALT  | SUBMENU","I@(t)eration","ITERATION CONTROL"}
+             ,{"ALT  | EOL","",""}
+             ,{"ALT  | SUBMENU","Brillouin-@(z)one","BRILLOUIN ZONE INTEGRATION"}
+             ,{"ALT  | SUBMENU","@(N)umerics","NUMERICS"}
+             ,{"ALT  | SUBMENU","@(G)rid-output","GRID OUTPUT"}
+             ,{"ALT  | SUBMENU","Core-@(o)ccupation","CORE OCCUPATION"}
+             ,{"ALT  | SUBMENU","Topological-Ins@(u)lators","TOPOLOGICAL INSULATORS"}
+             ,{"ALT  | SUBMENU","Opti@(c)s","OPTICS"}
+             ,{"ALT  | SUBMENU","C@(h)arges","CHARGES"}
+           }
+          ,{
+               {"TITLE|EOL","","","GENERAL DATA",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM","spin.mspin","1","@(s)pin sorts",1,20,13,"TOGGLE",{"1","2"},0,+INF}
+              ,{"ITEM|EOL","spin.initial_spin_split","f","@(i)nitial polarization",40,23,10,"",{},0,+INF}
+              ,{"ITEMLIST " ,"bzone_integration.nkxyz","12","@(k)-mesh subdivision",1,20,13,"",{},1,+INF}
+              ,{"ITEM|EOL","nband","-1","@(o)ccupied bands",40,23,10,"",{},-INF,+INF}
+              ,{"ITEM   ","iteration_control.steps","40","@(n)umber of iterat.",1,20,13 ,"",{},1,+INF}
+              ,{"ITEM |EOL  ","iteration_control.tolerance","1.e-6","@(A)ccuracy of density",40,23,10 ,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM   ","calc_etot","t","@(t)otal energy calc.",1,20,13 ,"",{},1,+INF}
+              ,{"ITEM |EOL  ","etot_tolerance","1.e-5","A@(c)curacy of Etot",40,23,10 ,"LEFT_OPEN",{},0,+INF}
+              ,{"SELECTBOX| AUTO_WIDTH |EOL","iteration_convergence_condition","1","Conver@(g)ence condition",    1,   20,   40,"",{
+              "     1\n@(1)\tDensity OR energy"
+              ,"     2\n@(2)\tDensity"
+              ,"     3\n@(3)\tDensity AND energy"
+              ,"     4\n@(4)\tEnergy"
+              },0,0}
+              ,{"CHECKBOX | TWO_COLUMN | AUTO_WIDTH | EOL ","options","","@(-)\tOptions",40,23,10,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","relativistic","1","@(R)elativistic",    1,   20,   40,"",{
+              "     1\n@(n)on relativistic"
+              ,"     2\n@(s)calar relativistic"
+              ,"     4\n@(K)H scalar relativistic"
+              ,"     3\n@(f)ull relativistic"
+              },0,0}
+              ,{"SELECTBOX| AUTO_WIDTH |EOL","xc_potential","9","@(V)xc-version",    1,   20,   40,"",{
+              "     1\n@(1)\tExchange only                (LSDA)",
+              "     2\n@(2)\tvon Barth Hedin              (LSDA)",
+              "     8\n@(3)\tPerdew and Zunger            (LSDA)",
+              "     9\n@(4)\tPerdew Wang 92               (LSDA)",
+              "    10\n@(5)\tPerdew Burke Ernzerhof 96    (GGA)"              },0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","nuclear_model","1","@(F)inite nucleus",    1,   20,   40,"",{
+              "     1\n@(1)\tPoint charge"
+              ,"     2\n@(2)\tConstant density"
+              ,"     3\n@(3)\tLinear density"
+              ,"     4\n@(4)\tSquare density"
+              ,"     5\n@(5)\tCubic density"
+              ,"     6\n@(6)\tQuintic density"
+              },0,0}
+              ,{"ITEM|EOL","ex_field_strength","1.0","xc-field str@(e)ngth",1,20,13,"",{},0,+INF}
+              ,{"ITEM","fsmoment.fsm","f","@(w) fixed spin mom.",1,20,13,"",{},0,+INF}
+              ,{"ITEM|EOL","fsmoment.moment","0.","@(y) spin moment",40,23,10,"",{},-INF,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","RELATIVISTIC SETTINGS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL " ,"quantization_axis","0","Q@(u)antization-axis",1,20,40,"",{},-INF,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","OTHERS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"SELECTBOX| AUTO_WIDTH |EOL","verbosity_level","200","@(>)\tverbosity level",1,20,40,"",{
+              "     0\n@(1)\tsilent",
+              "   100\n@(2)\tbasic information",
+              "   200\n@(3)\tmore information",
+              "   300\n@(4)\tmuch information",
+              "  1000\n@(5)\tcomplete information"              },0,0}
+           }
+     }
+    ,{"GRID OUTPUT"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL" ,"grids_active","f","@(a)ctive",1,26,17,"",{},-INF,+INF}
+              ,{"ITEM|EOL" ,"grids_stop_after","f","@(S)top after writing data",1,26,17,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"COMPOUND|EOL","grids","","GRID DEFINITIONS",1,-1,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of grid definitions",1,27,13,"",{},0,+INF}
+              ,{"BODY" ,"","","",0,0,0,"",{},0,0}
+              ,{"SELECTBOX| SHOW_CONTENT | EOL","basis","  2","@(B)asis",1,26,17,"",{
+              "     1\n@(p)rimitive",
+              "     2\n@(c)onventional",
+              "     3\nc@(a)rtesian"              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL" ,"direction1","1 0 0","@(1)st direction",1,26,17,"",{},-INF,+INF}
+              ,{"ITEMLIST|EOL" ,"direction2","0 1 0","@(2)nd direction",1,26,17,"",{},-INF,+INF}
+              ,{"ITEMLIST|EOL" ,"direction3","0 0 1","@(3)rd direction",1,26,17,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL" ,"origin","0","@(O)rigin",1,26,17,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST" ,"subdivision","30 30 30","@(S)ubdivisions",1,26,10,"",{},0,+INF}
+              ,{"ITEM|EOL" ,"file","","@(U)ser file",47,11,15,"WORD",{},0,+INF}
+              ,{"ITEM|EOL" ,"InclPeriodicPoints","t","@(I)nclude periodic points",1,26,17,"",{},0,+INF}
+              ,{"ITEM|EOL" ,"createOpenDX","t","@(C)reate openDX files",1,26,17,"",{},0,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"MSELECTBOX | SHOW_CONTENT | TWO_COLUMN| EOL","quantities","  1","@(Q)uantities",1,26,17,"",{
+              "     1\nTotal @(D)ensity",
+              "     2\nTotal @(P)otential",
+              "     3\nSCF   @(W)ave functions",
+              "     4\n@(C)oulomb Potential",
+              "     5\nXC Po@(t)ential",
+              "     6\n@(E)wald Potential"              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"MSELECTBOX | SHOW_CONTENT | TWO_COLUMN| EOL","outputdata","  2   3   4","Output @(D)ata",1,26,17,"",{
+              "     1\n@(I)\tIndex",
+              "     2\n@(P)\tGrid points",
+              "     3\n@(T)\tTotal",
+              "     4\n@(S)\tSpin",
+              "     5\n@(U)\tSpinup",
+              "     6\n@(D)\tSpindown",
+              "     7\n@(C)\tComponents"              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL" ,"scfwavefnctwindow","1 -1","SCF @(W)avefnct energy window",1,36,17,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"COMPOUND|EOL","energywindows","","@(r)\tEnergy resolved densities",1,-1,0,"",{},0,0}
+              ,{"ITEM|EOL" ,"name","ewdens","N@(a)me",1,26,13,"",{},0,+INF}
+              ,{"COUNTER" ,"","","@(N)umber of energy resolved densities",1,36,13,"",{},0,+INF}
+              ,{"BODY" ,"","","",2,0,0,"",{},0,0}
+              ,{"FIELD","sections","","",1,26,0,"",{},0,0}
+              ,{"COUNTER|EOL" ,"","","@(N)umber of sections",1,26,13,"",{},0,+INF}
+              ,{"TITLE" ,"","","Emin             Emax             De        Spin",11,-1,0,"",{},0,+INF}
+              ,{"DASHLINE","","","",3,-1,0,"",{},0,0}
+              ,{"ITEM" ,"emin","-1","",3,5,14,"",{},-INF,+INF}
+              ,{"ITEM" ,"emax","0","",25,0,14,"",{},-INF,+INF}
+              ,{"ITEM" ,"de","0.1","",42,0,7,"",{},0,+INF}
+              ,{"ITEM|SELECTOR" ,"spin","0","",52,0,8,"",{"0\nboth","1\nup","2\ndown"},0,2}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+              ,{"ENDCOMPOUND","","","",1,25,8,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"COMPOUND|EOL","kresolved","","@(k)-resolved densities/wave functions",1,-1,0,"",{},0,0}
+              ,{"COUNTER" ,"","","Nu@(m)ber of k-resolved densit./Wave fu.",1,36,13,"",{},0,+INF}
+              ,{"BODY" ,"","","",2,0,0,"",{},0,0}
+              ,{"ITEM|EOL" ,"name","kdens","@(N)ame",3,24,14,"",{},-INF,0}
+              ,{"ITEMLIST|EOL" ,"kpoint","0 0 0","@(k)-point",3,24,-1,"",{},-INF,+INF}
+              ,{"ITEMLIST|EOL" ,"bandindices","1","@(b)ands",3,24,-1,"",{},1,+INF}
+              ,{"ITEMLIST|EOL" ,"energywindow","0","@(e)nergy window",3,24,24,"",{},-INF,+INF}
+              ,{"ENDCOMPOUND","","","",1,25,8,"",{},0,0}
+              ,{"ENDCOMPOUND","","","",1,25,8,"",{},0,0}
+           }
+     }
+    ,{"ITERATION CONTROL"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","iteration_version","1","@(V)ersion",1,22,40,"",{
+              "     1\n@(1)\tSimpleMix: Pratt's scheme"
+              ,"     2\n@(2)\tIterat   : Hyperspace interpolation"
+              ,"     4\n@(4)\tLCIterat : Iterat with linear progress control"
+              },0,0}
+              ,{"ITEM |EOL  ","iteration_control.mixing","0.2","M@(i)xing",1,22,13 ,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM |EOL  ","iteration_control.maxdim","5","@(M)ax subspace dim",1,22,13 ,"",{},1,+INF}
+              ,{"ITEM |EOL  ","iteration_control.progress","0.2","@(P)rogress",1,22,13 ,"LEFT_OPEN",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","ITERATION VECTOR RATIO",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","iterationvector_ratio.U","1.0","@(2)\toccu mat / density",1,22,13 ,"LEFT_OPEN",{},0,+INF}
+           }
+     }
+    ,{"MESH DEFINITION"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+               {"TITLE|EOL","","","RADIAL FUNCTION MESH",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"radial_mesh.nr","200","@(1)\tnumber of mesh points",1,25,8,"",{},2,+INF}
+              ,{"ITEM |EOL " ,"radial_mesh.rmin","1.e-4","@(2) minimal radius",40,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM " ,"radial_mesh.rmax","0","@(3)\tmaximal radius",1,25,8,"",{},0,+INF}
+              ,{"ITEM |EOL " ,"radial_mesh.rmax_factor","1.0","@(4) factor for rmax",40,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","ATOM MESH",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"atom_radial_mesh.nr","200","@(5)\tnumber of mesh points",1,25,8,"",{},2,+INF}
+              ,{"ITEM |EOL " ,"atom_radial_mesh.rmin","1.e-7","@(6) minimal radius",40,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM|EOL " ,"atom_radial_mesh.rmax","0","@(7)\tmaximal radius",1,25,8,"",{},0,+INF}
+           }
+     }
+    ,{"BRILLOUIN ZONE INTEGRATION"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL " ,"bzone_kT","1000","@(T)emperature",1,25,8,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","WARNING: METAL SWITCH AND METHFESSEL PAXTON ARE NOT TESTED !!!",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","bzone_method","1","@(i)ntegration method",1,25,40,"",{
+              "     1\n@(t)etrahedron method"
+              ,"     2\n@(M)ethfessel-Paxton method"
+              },0,0}
+              ,{"ITEM|EOL " ,"bzone_integration.metal","t","@(s)uppose its a metal",1,25,8,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","METHFESSEL-PAXTON METHOD",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"mp_bzone_integration.width","0.005","@(w)idth parameter",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM |EOL " ,"mp_bzone_integration.norder","0","@(o)rder parameter",40,25,8,"",{},0,+INF}
+           }
+     }
+    ,{"BANDPLOT"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","bandplot_control.bandplot","f","@(B)andstructure plot",1,27,13 ,"",{},0,+INF}
+              ,{"ITEM |EOL  ","bandplot_control.read_sympoints","t","@(R)ead sym-points",1,27,13 ,"",{},0,+INF}
+              ,{"ITEM |EOL  ","bandplot_control.ndivisions","50","@(s)teps between sym-points",1,27,13 ,"",{},1,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","DOS/AKBL/BANDS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM  ","bandplot_control.nptdos","1000","Number of e@(-)pts (non-CPA)",1,27,13 ,"",{},1,+INF}
+              ,{"ITEM |EOL  ","bandplot_control.plot_idos","f","@(p)lot IDOS",50,16,8 ,"",{},-INF,+INF}
+              ,{"ITEM |EOL  ","bandplot_control.plot_ndos","f","plot n@(e)t DOS",50,16,8 ,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL  ","bandplot_control.emin","-10.0","@(l)ower energy bound [eV] relative to E_f",1,41,13 ,"",{},-INF,+INF}
+              ,{"ITEM|EOL  ","bandplot_control.emax","10.0","@(u)pper energy bound [eV] relative to E_f",1,41,13 ,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","bandplot_control.restrict_bands_to_window","t","Restr@(i)ct bands to window",1,27,13 ,"",{},0,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL " ,"ldossites","1","Local @(D)OS sites",1,20,40,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL " ,"bandplot_control.coeffout","f","Output +@(c)oeff file",1,20,40,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","BAND WEIGHTS/FAT BANDS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","bandweight_control.bwdfilename","","Weights def @(f)ile",1,27,13 ,"",{},0,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","bandweight_control.bandweights","f","@(w)eights",1,27,13 ,"",{},0,+INF}
+              ,{"ITEM |EOL  ","bandweight_control.bweight_rot","f","@(t)ransform quant. axis",1,27,13 ,"",{},0,+INF}
+              ,{"ITEMLIST |EOL  ","bandweight_control.x_axis","0.","X-@(a)xis",1,27,43 ,"",{},-INF,+INF}
+              ,{"ITEMLIST |EOL  ","bandweight_control.z_axis","0.","@(z)-axis",1,27,43 ,"",{},-INF,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"FIELD","special_sympoints","","",1,27,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of sym-points",1,27,13,"",{},1,+INF}
+              ,{"DASHLINE","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE" ,"",""," No.    Label                 k-point",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"ITEM" ,"label","$~G","",1,5,17,"",{},1,+INF}
+              ,{"ITEMLIST" ,"kpoint","0.","",27,1,43,"",{},-INF,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+           }
+     }
+    ,{"FORCES"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","force_mode","1","@(F)orce Mode",1,22,40,"",{
+              "     1\n@(1)\tNo forces"
+              ,"     2\n@(2)\tSite geometry optimization"
+              ,"     3\n@(3)\tSingle force step"
+              },0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","SITE GEOMETRY OPTIMIZATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM  ","force_iteration_control.tolerance","1.e-3","@(A)ccuracy [eV/Ang]",1,20,13 ,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM |EOL  ","force_iteration_control.maxdim","-1","@(M)ax subspace dim",40,22,13 ,"",{},-1,+INF}
+              ,{"ITEM|EOL   ","force_iteration_control.steps","100","@(n)umber of iterat.",1,20,13 ,"",{},1,+INF}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","force_iteration_version","1","@(V)ersion",1,20,40,"",{
+              "     6\n@(6)\tMinIterat: Find minimum with iterat"
+              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEMLIST|EOL " ,"geomopt_sites","1","@(W)yckoffs to vary",1,20,-1,"",{},1,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","OPTIONS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL","force_in_each_step","f","@(C)alculate force in each step.",1,30,13 ,"",{},1,+INF}
+              ,{"ITEM   ","approx_nodndL_ewald","f","Not potential @(e)wald correction",1,30,13 ,"",{},1,+INF}
+           }
+     }
+    ,{"CORE OCCUPATION"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"FIELD | EOL","core_occupation","","",1,23,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of definitions",1,23,13,"",{},0,+INF}
+              ,{"DASHLINE","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE" ,"",""," No.    Wy-pos. state          spinup                     spindown",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"ITEM" ,"sort","1","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"state","1s","",14,0,3,"STATE",{},0,+INF}
+              ,{"ITEMLIST" ,"spinup","0.","",23,0,22,"",{},0,+INF}
+              ,{"ITEMLIST" ,"spindn","0.","",50,0,22,"",{},0,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+           }
+     }
+    ,{"LSDA+U"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"TITLE|EOL","","","GENERAL CONTROL",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"make_lsdau","f","@(m)ake LSDA+U",1,22,11,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","lsdau_functional","1","@(F)unctional",1,22,40,"",{
+              "     1\n@(1)\tLSDA+U Around mean field (AMF/OP)"
+              ,"     2\n@(2)\tLSDA+U Atomic limit      (AL)"
+              ,"     3\n@(3)\tFixed Potential, Lagrange"
+              },0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","lsdau_projection","1","@(P)rojection",1,22,40,"",{
+              "     1\n@(1)\torthogonal"
+              ,"     4\n@(4)\tgross population"
+              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"FIELD | EOL","lsdau_defs","","CORRELATED STATES",1,23,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of definitions",1,23,13,"",{},0,+INF}
+              ,{"DASHLINE","","","",1,40,0,"",{},0,0}
+              ,{"TITLE" ,"",""," No.    Wy-pos. state    F0 F2 F4 F6 (eV)",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,40,0,"",{},0,0}
+              ,{"ITEM" ,"sort","1","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"state","1s","",14,0,3,"STATE",{},0,+INF}
+              ,{"ITEMLIST" ,"f_slater","0.","",23,0,-1,"",{},0,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","ITERATION CONTROL",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL  ","lsdau_dmat_deviation","1.e-2","@(O)ccu. matrix tolerance",1,22,10 ,"LEFT_OPEN",{},0,+INF}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","lsdau_dmat_mode","1","O@(c)cupation matrix mode",1,22,40,"",{
+              "     1\n@(1)\tself consistent"
+              ,"     2\n@(2)\tfixed"
+              },0,0}
+           }
+     }
+    ,{"OPC"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"TITLE|EOL","","","GENERAL CONTROL",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"make_opc","f","@(m)ake OPC",1,22,11,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","opc_functional","1","@(F)unctional",1,22,40,"",{
+              "     1\n@(1)\tSpin dependend (Nordstroem, Brooks, Johansson, JPhysC 4, 3261 (1992))"
+              ,"     2\n@(2)\tSpin independend (Eriksson, Brooks, Johansson, PRB 41, R7311 (1990))"
+              },0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"FIELD | EOL","opc_defs","","OPC STATES",1,23,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of definitions",1,23,13,"",{},0,+INF}
+              ,{"DASHLINE","","","",1,40,0,"",{},0,0}
+              ,{"TITLE" ,"",""," No.    Wy-pos. state   ",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,40,0,"",{},0,0}
+              ,{"ITEM" ,"sort","1","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"state","1s","",14,0,3,"STATE",{},0,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+           }
+     }
+    ,{"INITIAL SPINSPLIT"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"FIELD | EOL","initial_spin_split","","",1,23,0,"",{},0,0}
+              ,{"TITLE" ,"","","Wy-pos. element initial spin",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"ITEM|FIXED" ,"element","E ","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"split","0.5","",14,0,15,"",{},-INF,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+           }
+     }
+    ,{"CPA"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+               {"FIELD | EOL","concentrations","","CONCENTRATION",1,23,0,"",{},0,0}
+              ,{"TITLE" ,"","","_________________________________",1,-1,0,"",{},0,+INF}
+              ,{"TITLE" ,"","","Wy-pos. element concentration",1,-1,0,"",{},0,+INF}
+              ,{"TITLE" ,"","","_________________________________",1,-1,0,"",{},0,+INF}
+              ,{"ITEM|FIXED" ,"atom","E ","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"concentration","1.0","",14,0,15,"LEFT_OPEN",{},0,1.0}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+              ,{"TITLE" ,"","","_________________________________",1,-1,0,"",{},0,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","DENSITY OF STATES",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"cpa_dos.ne","1000","@(dn)\tnumber of e-points",1,25,8,"",{},2,+INF}
+              ,{"ITEM |EOL " ,"cpa_dos.eimag","1.e-3","@(di)\timag(e)",40,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","SELF ENERGY ITERATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"cpa_control.emin0","-1.60","@(l)ower energy bound",1,25,8,"",{},-INF,+INF}
+              ,{"ITEM |EOL " ,"cpa_control.emax0","0.4","@(u)pper energy bound",40,25,8,"",{},-INF,+INF}
+              ,{"ITEM |EOL " ,"cpa_control.eimag","1.e-5","@(im)aginary part at e_F",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM " ,"cpa_control.nec","16","@(n)umber of e-points",1,25,8,"",{},2,+INF}
+              ,{"ITEM |EOL " ,"cpa_control.max_se_loops","10","@(c)pa loops maximum",40,25,8,"",{},1,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","FERMI ENERGY ITERATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM " ,"cpa_fermi_control.efermi0","0.08","@(g)uess of fermi energy",1,25,8,"",{},-INF,+INF}
+              ,{"ITEM |EOL " ,"cpa_fermi_control.max_ef_loops","10","@(m)ax e-fermi loop",40,25,8,"",{},1,+INF}
+              ,{"ITEM " ,"cpa_fermi_control.slop_0","30.","@(f)irst slope",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM |EOL " ,"cpa_fermi_control.slop_min","0.3","@(s)mallest slope",40,25,8,"LEFT_OPEN",{},0,+INF}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","cpa_fermi_method","1","@(i)teration method",1,25,40,"",{
+              "     1\n@(s)ecant method"
+              ,"     2\n@(b)isection method"
+              },0,0}
+           }
+     }
+    ,{"NUMERICS"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+               {"TITLE|EOL","","","POTENTIAL REPRESENTATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL","max_L","4","@(M)aximum L",1,25,8,"",{},0,12}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","ONE CENTER INTEGRALS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL" ,"one_center_integrals.nr","200","@(f)\tradial-mesh points",1,25,8,"",{},2,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","COULOMB ENERGY CALCULATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM" ,"coulomb_energy_calc.nxi","26","@(i)\txi-mesh points",1,25,8,"",{},2,+INF}
+              ,{"ITEM | EOL " ,"coulomb_energy_calc.neta","46","@(j)\teta-mesh points",40,25,8,"",{},2,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","OVERLAP DENSITY CALCULATION",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM" ,"overlap_density_calc.nr","50","@(o)\tradial mesh points",1,25,8,"",{},2,+INF}
+              ,{"ITEM | EOL " ,"overlap_density_calc.neta","20","@(p)\tazimutal mesh points",40,25,8,"",{},2,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","CUT-OFF TOLERANCES",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM" ,"cutoff_tolerances.dens","1.e-7","@(q)\tdensity",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM | EOL " ,"cutoff_tolerances.pot","50","@(r)\tpotential",40,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"ITEM |EOL" ,"cutoff_tolerances.orbital","1.e-7","@(s)\torbitals",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","SYMMETRY TEST",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL" ,"symtest.tol","5.0e-13","@(t)\ttolerance",1,25,8,"LEFT_OPEN",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","INTERPOLATION OF RADIAL FUNCTIONS",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM |EOL " ,"interpolation.degree","8","@(u)\tdegree",1,25,8,"",{},1,8}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","EWALD CONTROL SETTINGS AUTOMATIC MODE",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM" ,"ewald_parameter.eps_r","1.0e-5","@(y2)\tReal space tolerance",1,25,8,"LEFT_OPEN",{},0.,+INF}
+              ,{"ITEM|EOL" ,"ewald_parameter.eps_g","1.0e-5","@(y3)\tRec. space tolerance",40,25,8,"LEFT_OPEN",{},0.,+INF}
+           }
+     }
+    ,{"TOPOLOGICAL INSULATORS"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"TITLE|EOL","","","GENERAL CONTROL",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"topological_insulator.active","f","@(c)alculate Z2-invariant",1,22,11,"",{},1,+INF}
+           }
+     }
+    ,{"OPTICS"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"TITLE|EOL","","","GENERAL CONTROL",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"optics.active","f","@(m)ake optics",1,23,11,"",{},1,+INF}
+              ,{"ITEM | EOL " ,"optics.jointdos","f","use @(j)oint dos",1,23,11,"",{},1,+INF}
+              ,{"ITEM | EOL " ,"optics.stopafter","f","use @(s)top after optics",1,23,11,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","ENERGY WINDOW",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"optics.energy.ne","1000","@(n)umber of points",1,23,22,"",{},1,+INF}
+              ,{"ITEM | EOL " ,"optics.energy.emin","0","@(l)ower energy [eV]",1,23,22,"",{},0,+INF}
+              ,{"ITEM | EOL " ,"optics.energy.emax","10","@(u)pper energy [eV]",1,23,22,"",{},0,+INF}
+           }
+     }
+    ,{"CHARGES"
+     ,"=.in"
+          ,{
+             {"MAIN | EXIT ","e@(x)it",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+           }
+          ,{
+              {"TITLE|EOL","","","VCA",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM | EOL " ,"charges.make_vca","f","@(m)ake VCA",1,23,11,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"FIELD | EOL","charges.vca","","VCA DEFINITIONS",1,23,0,"",{},0,0}
+              ,{"COUNTER" ,"","","@(N)umber of definitions",1,23,13,"",{},0,+INF}
+              ,{"DASHLINE","","","",1,40,0,"",{},0,0}
+              ,{"TITLE" ,"",""," No.    Wy-pos. Z",1,-1,0,"",{},0,+INF}
+              ,{"DASHLINE|EOL","","","",1,40,0,"",{},0,0}
+              ,{"ITEM" ,"sort","1","",1,5,4,"",{},1,+INF}
+              ,{"ITEM" ,"Z","0.","",14,0,22,"LEFT_OPEN",{},0,+INF}
+              ,{"ENDFIELD","","","",1,25,8,"",{},0,0}
+              ,{"DASHLINE|EOL","","","",1,-1,0,"",{},0,0}
+              ,{"TITLE|EOL","","","GLOBAL CHARGES",1,-1,0,"",{},0,0}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH |EOL ","charges.chargemode","0","@(C)harge mode",    1,   23,   40,"",{
+              "     1\n@(1)\tNone"
+              ,"     2\n@(2)\tJellium"
+              ,"     3\n@(3)\tMolecular ionicity"
+              },0,0}
+              ,{"ITEM | EOL " ,"charges.ionicity","0.0","@(i)onicity",1,23,22,"",{},-INF,+INF}
+           }
+     }
+    ,{"SYMMETRY MENU"
+     ,"=.sym"
+          ,{
+              {"MAIN | EXIT | SPECIAL_SYMMETRY ","e@(x)it",""}
+             ,{"MAIN | EXTERNEDIT","@(e)xtern edit",""}
+             ,{"MAIN | FPLORUN  ","@(+) Update",""}
+             ,{"MAIN | SEPARATOR","",""}
+             ,{"MAIN | HELP","@(H)elp",""}
+             ,{"ALT  | VIEWER","Symmetry @(i)nformation","$tmp/+symminfo"}
+           }
+          ,{
+              {"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL","compound","","@(C)ompound",1,21,50,"",{},0,0}
+             ,{"SELECTBOX|  AUTO_WIDTH|EOL","structure_type"," 1","s@(t)ructure type",1,21,40,"",{
+              "     1\n@(C)rystal"
+              ,"     2\n@(M)olecule"
+             },0,0}
+
+             ,{"SELECTBOX |PRINT_VALUE| VALUE_AS_HOTKEY |THREE_COLUMN | AUTO_WIDTH|EOL"
+,"spacegroup","225","@(S)pacegroup",1,21,40,"" ,{
+                "Note that only one choice of axis/origin is implemented, see help."
+                ,"Triclinic"
+                ,"  1\nP1","  2\nPB1"
+                ,"Monoclinic"
+                ,"  3\nP2","  4\nP21","  5\nC2","  6\nPM"
+                ,"  7\nPC","  8\nCM","  9\nCC"," 10\nP2/M"
+                ," 11\nP21/M"," 12\nC2/M"," 13\nP2/C"," 14\nP21/C"
+                ," 15\nC2/C"
+                ,"Orthorhombic"
+                ," 16\nP222"," 17\nP2221"," 18\nP21212"," 19\nP212121"
+                ," 20\nC2221"," 21\nC222"," 22\nF222"," 23\nI222"
+                ," 24\nI212121"," 25\nPMM2"," 26\nPMC21"," 27\nPCC2"
+                ," 28\nPMA2"," 29\nPCA21"," 30\nPNC2"," 31\nPMN21"
+                ," 32\nPBA2"," 33\nPNA21"," 34\nPNN2"," 35\nCMM2"
+                ," 36\nCMC21"," 37\nCCC2"," 38\nAMM2"," 39\nABM2"
+                ," 40\nAMA2"," 41\nABA2"," 42\nFMM2"," 43\nFDD2"
+                ," 44\nIMM2"," 45\nIBA2"," 46\nIMA2"," 47\nPMMM"
+                ," 48\nPNNN"," 49\nPCCM"," 50\nPBAN"," 51\nPMMA"
+                ," 52\nPNNA"," 53\nPMNA"," 54\nPCCA"," 55\nPBAM"
+                ," 56\nPCCN"," 57\nPBCM"," 58\nPNNM"," 59\nPMMN"
+                ," 60\nPBCN"," 61\nPBCA"," 62\nPNMA"," 63\nCMCM"
+                ," 64\nCMCA"," 65\nCMMM"," 66\nCCCM"," 67\nCMMA"
+                ," 68\nCCCA"," 69\nFMMM"," 70\nFDDD"," 71\nIMMM"
+                ," 72\nIBAM"," 73\nIBCA"," 74\nIMMA"
+                ,"Tetragonal"
+                ," 75\nP4"," 76\nP41"," 77\nP42"," 78\nP43"
+                ," 79\nI4"," 80\nI41"," 81\nPB4"," 82\nIB4"
+                ," 83\nP4/M"," 84\nP42/M"," 85\nP4/N"," 86\nP42/N"
+                ," 87\nI4/M"," 88\nI41/A"," 89\nP422"," 90\nP4212"
+                ," 91\nP4122"," 92\nP41212"," 93\nP4222"," 94\nP42212"
+                ," 95\nP4322"," 96\nP43212"," 97\nI422"," 98\nI4122"
+                ," 99\nP4MM","100\nP4BM","101\nP42CM","102\nP42NM"
+                ,"103\nP4CC","104\nP4NC","105\nP42MC","106\nP42BC"
+                ,"107\nI4MM","108\nI4CM","109\nI41MD","110\nI41CD"
+                ,"111\nPB42M","112\nPB42C","113\nPB421M","114\nPB421C"
+                ,"115\nPB4M2","116\nPB4C2","117\nPB4B2","118\nPB4N2"
+                ,"119\nIB4M2","120\nIB4C2","121\nIB42M","122\nIB42D"
+                ,"123\nP4/MMM","124\nP4/MCC","125\nP4/NBM","126\nP4/NNC"
+                ,"127\nP4/MBM","128\nP4/MNC","129\nP4/NMM","130\nP4/NCC"
+                ,"131\nP42/MMC","132\nP42/MCM","133\nP42/NBC","134\nP42/NNM"
+                ,"135\nP42/MBC","136\nP42/MNM","137\nP42/NMC","138\nP42/NCM"
+                ,"139\nI4/MMM","140\nI4/MCM","141\nI41/AMD","142\nI41/ACD"
+                
+                ,"Trigonal"
+                ,"143\nP3","144\nP31","145\nP32","146\nR3"
+                ,"147\nPB3","148\nRB3","149\nP312","150\nP321"
+                ,"151\nP3112","152\nP3121","153\nP3212","154\nP3221"
+                ,"155\nR32","156\nP3M1","157\nP31M","158\nP3C1"
+                ,"159\nP31C","160\nR3M","161\nR3C","162\nPB31M"
+                ,"163\nPB31C","164\nPB3M1","165\nPB3C1","166\nRB3M"
+                ,"167\nRB3C"
+                ,"Hexagonal"
+                ,"168\nP6","169\nP61","170\nP65","171\nP62"
+                ,"172\nP64","173\nP63","174\nPB6","175\nP6/M"
+                ,"176\nP63/M","177\nP622","178\nP6122","179\nP6522"
+                ,"180\nP6222","181\nP6422","182\nP6322","183\nP6MM"
+                ,"184\nP6CC","185\nP63CM","186\nP63MC","187\nPB6M2"
+                ,"188\nPB6C2","189\nPB62M","190\nPB62C","191\nP6/MMM"
+                ,"192\nP6/MCC","193\nP63/MCM","194\nP63/MMC"
+                ,"Cubic"
+                ,"195\nP23","196\nF23","197\nI23","198\nP213"
+                ,"199\nI213","200\nPM3","201\nPN3","202\nFM3"
+                ,"203\nFD3","204\nIM3","205\nPA3","206\nIA3"
+                ,"207\nP432","208\nP4232","209\nF432","210\nF4132"
+                ,"211\nI432","212\nP4332","213\nP4132","214\nI4132"
+                ,"215\nPB43M","216\nFB43M","217\nIB43M","218\nPB43N"
+                ,"219\nFB43C","220\nIB43D","221\nPM3M","222\nPN3N"
+                ,"223\nPM3N","224\nPN3M","225\nFM3M","226\nFM3C"
+                ,"227\nFD3M","228\nFD3C","229\nIM3M","230\nIA3D"
+                
+             },0,0}
+
+             ,{"SELECTBOX|  AUTO_WIDTH|EOL","lengthunit","1","@(U)nit of length",1,21,40,"",{
+              "     1\n@(B)ohr radii"
+              ,"     2\n@(A)ngstroem"
+             },0,0}
+
+             ,{"ITEMLIST | EOL","lattice_constants","5.4","@(L)attice constants",1,21,50,"LEFT_OPEN",{},0,+INF}
+             ,{"ITEMLIST | EOL","axis_angles","90","@(A)xis angles",1,21,50,"LEFT_OPEN",{},0,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"ITEMLIST | EOL","subgroupgenerators","0","Subgroup @(G)enerators",1,21,50,"LEFT_OPEN",{},0,64}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+              ,{"ITEM|EOL","nsort","1","@(n)umber of atoms",1,21,40,"",{},1,+INF}
+              ,{"EOL","","","",0,0,0,"",{},0,0}
+             ,{"FIELD|EOL","wyckoff_positions","","Wyckoff positions",1,21,40,"",{},0,0}
+             ,{"ITEM" ,"element","Al","-th atom sort",1,21,5,"",{
+               "E ","H ","He","Li","Be","B ","C ","N ","O ","F ",
+               "Ne","Na","Mg","Al","Si","P ","S ","Cl","Ar","K ",
+               "Ca","Sc","Ti","V ","Cr","Mn","Fe","Co","Ni","Cu",
+               "Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y ",
+               "Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In",
+               "Sn","Sb","Te","I ","Xe","Cs","Ba","La","Ce","Pr",
+               "Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm",
+               "Yb","Lu","Hf","Ta","W ","Re","Os","Ir","Pt","Au",
+               "Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac",
+               "Th","Pa","U ","Np","Pu","Am","Cm","Bk","Cf","Es",
+               "Fm","Md","No","Lr"             },0,+INF}
+             ,{"ITEMLIST " ,"tau","0.","tau",30,0,40,"",{},-INF,+INF}
+             ,{"ENDFIELD","","","",1,21,40,"",{},0,0}
+           }
+     }
+  };
+};

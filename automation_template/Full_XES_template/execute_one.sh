@@ -32,7 +32,7 @@ rename_files() {
     done
 }
 
-entry="TiO"
+entry="NiO"
 echo $entry
 mkdir -p output/$entry
 
