@@ -21,9 +21,16 @@ The automation scripts expect the following folder structure
 ```
 automation/
 ├── automation_template/
+│   ├── write_0.py
+│   ├── write_1.py
+│   ├── write_LFMcalc_general.py
+│   ├── write_feffinp.py
+│   ├── XES_XAS_XPS_template/
+│   └── .......
 ├── YOUR-PROJECT-DIRECTORY/
 ├── utils/
 └── README.md
+
 ```
 
 
