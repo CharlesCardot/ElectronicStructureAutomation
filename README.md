@@ -1,3 +1,7 @@
+**If you would like to use this pipeline for your own applications, please see the release/1.0.0 branch**
+
+### Introduction
+
 This repo is for the automation of nearly ab-initio Quanty calculations using the DFT + MLFT
 pipeline established by Haverkort et. al (https://doi.org/10.1103/PhysRevB.85.165113). For information
 about how to use this pipeline, please visit the Quanty website (https://www.quanty.org/documentation/start),
