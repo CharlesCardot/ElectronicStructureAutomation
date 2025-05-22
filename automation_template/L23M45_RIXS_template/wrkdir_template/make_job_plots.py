@@ -92,7 +92,7 @@ plot_utils.stitch_images_horizontal(image_paths, output_path)
 plot_utils.make_BandStructAndLdosPlots(Path("DFT"), material_input, BSandLDOS_pp_dict)
 
 # L23 XAS Spectra Plots
-plot_utils.make_QuantyPlots_XAS("LFMcalc", {**L23_pp_dict, **plot_params_dict})
+# plot_utils.make_QuantyPlots_XAS("LFMcalc", {**L23_pp_dict, **plot_params_dict})
 
 # # Crystal Visualization
 # plot_utils.make_crystalvisplots(structure, {"direction": "x", "output_filename": "crystal_xdir.png"})
@@ -120,7 +120,8 @@ ex: (z,0,+1) = photon propegating along z-axis with
 """
 plot_utils.text_to_image(text = text, output_path = "header.png", font_size=60)
 
-image_paths = ["header.png", "L23_composite.png"]
+# image_paths = ["header.png", "L23_composite.png"]
+image_paths = ["header.png"]
 # image_paths = image_paths + ["stitched_crystal_image.png", "stitched_SCFconv.png", "bs_and_ldos.png"]
 image_paths = image_paths + ["stitched_SCFconv.png", "bs_and_ldos.png"]
 output_pdf_path = f"{NAME}_summary.pdf"

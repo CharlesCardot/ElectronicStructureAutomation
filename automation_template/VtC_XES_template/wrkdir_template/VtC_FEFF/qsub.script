@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #PBS -l nodes=1:ppn=1
-#PBS -N NAME_VtC
+#PBS -N NiO_VtC
 #PBS -o /dev/null
 #PBS -e /dev/null
 #PBS -V
@@ -9,10 +9,18 @@ cd $PBS_O_WORKDIR
 set -e  # Exit immediately if a command returns a non-zero status
 
 # Iterate over each folder in the current directory
-for folder in */; do 
-	if [[ $folder != "VtC_template/" ]]; then
+for folder in */; do
+    if [[ $folder != "VtC_template/" ]]; then
         cd "$folder"
+
+        # Get the folder name without trailing slash
+        jobname=$(basename "$folder")
+
+        # Replace the PBS -N line in qsub.script with the current folder name
+        sed -i "s/^#PBS -N .*/#PBS -N $jobname/" qsub.script
+
         qsub qsub.script
         cd ..
     fi
 done
+

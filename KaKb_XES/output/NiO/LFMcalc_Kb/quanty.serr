@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/home/ccardot3/QuantyScripts/automation/KaKb_XES/output/NiO/LFMcalc_Kb/edit_3_XES.py", line 15, in <module>
-    Energies = CF.badGREP(data,start_str="--Initial State Energies--",start=1,end=2)[0]
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/ccardot3/Python_Code/CharlesFunctions/CharlesFunctions.py", line 400, in badGREP
-    return arr[0]
-           ~~~^^^
-IndexError: list index out of range

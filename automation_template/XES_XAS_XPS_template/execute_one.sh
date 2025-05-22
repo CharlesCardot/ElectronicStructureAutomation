@@ -32,13 +32,6 @@ rename_files() {
 
 entry="NiO"
 echo $entry
-
-if [ -d output/$entry ]; then
-	echo "Directory for job already exists"
-	echo "Exiting..."
-	exit 1
-fi
-
 mkdir -p output/$entry
 
 workdir="output/${entry}"

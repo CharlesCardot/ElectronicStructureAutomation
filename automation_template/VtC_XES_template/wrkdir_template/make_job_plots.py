@@ -1,5 +1,13 @@
 import sys
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
+import os
+from pathlib import Path
+
+path_to_file = Path(os.path.realpath(__file__))
+automation_index = next((i for i, p in enumerate(path_to_file.parts) if p == 'automation'), None)
+parent_dir = path_to_file.parents[len(path_to_file.parts) - automation_index - 3]
+
+utils_path = parent_dir.parents[0] / "utils"
+sys.path.append(str(utils_path))
 import CharlesFunctions as CF
 
 import numpy as np
@@ -7,11 +15,9 @@ import matplotlib.pyplot as plt
 import scipy
 import datetime
 import re
-import os
 
 import plot_utils
 
-from pathlib import Path
 from matplotlib.ticker import ScalarFormatter
 
 from pymatgen.vis.structure_vtk import StructureVis
@@ -80,6 +86,9 @@ import json
 with open(parent_dir / str("materials/%s/%s.inp" % (NAME,NAME)),"r") as f:
     material_input = json.load(f)
 
+if "NAME" not in material_input:
+    material_input["NAME"] = NAME
+
 # Add name to default plot_params
 plot_params_dict.update({"NAME": NAME})
 
@@ -117,13 +126,18 @@ for key, val in VtC_folders_dict.items():
     VtC_avg_filenames.update({key: VtC_pp_dict["output_filename"]})
     plot_utils.make_FEFFPlots([Path("VtC_FEFF") / VtC_folders[i] for i in val], {**VtC_pp_dict, **plot_params_dict})
 
-# Crystal Visualization
-plot_utils.make_crystalvisplots(structure, {"direction": "x", "output_filename": "crystal_xdir.png"})
-plot_utils.make_crystalvisplots(structure, {"direction": "y", "output_filename": "crystal_ydir.png"})
-plot_utils.make_crystalvisplots(structure, {"direction": "z", "output_filename": "crystal_zdir.png"})
-image_paths = ["crystal_zdir.png", "crystal_ydir.png", "crystal_xdir.png"]
-output_path = "stitched_crystal_image.png"
-plot_utils.stitch_images_horizontal(image_paths, output_path)
+# This code visualizes the crystal structure, similar to what you might use Vesta, JMOL, or Avogadro for,
+# but it requires a custom pymatgen version and it's easier for a user to just do the
+# visualization with their own favorite software
+#######################################################################################################
+# # Crystal Visualization
+# plot_utils.make_crystalvisplots(structure, {"direction": "x", "output_filename": "crystal_xdir.png"})
+# plot_utils.make_crystalvisplots(structure, {"direction": "y", "output_filename": "crystal_ydir.png"})
+# plot_utils.make_crystalvisplots(structure, {"direction": "z", "output_filename": "crystal_zdir.png"})
+# image_paths = ["crystal_zdir.png", "crystal_ydir.png", "crystal_xdir.png"]
+# output_path = "stitched_crystal_image.png"
+# plot_utils.stitch_images_horizontal(image_paths, output_path)
+#######################################################################################################
 
 # Meta Data
 text = f"""
@@ -151,7 +165,7 @@ image_paths = ["header.png"]
 for key, val in VtC_avg_filenames.items():
     image_paths.append(val)
     image_paths.append(LDOS_avg_filenames[key])
-image_paths = image_paths + ["stitched_crystal_image.png"]
+# image_paths = image_paths + ["stitched_crystal_image.png"]
 output_pdf_path = f"{NAME}_summary.pdf"
 plot_utils.convert_images_to_pdf(image_paths, output_pdf_path)
 plot_utils.move_png_files(folder_name = f"{NAME}_plots")

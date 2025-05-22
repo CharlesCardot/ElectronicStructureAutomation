@@ -28,7 +28,8 @@ python write_0.py
 quanty 0_RunQSUBNAMEFPLO.Quanty &> testing_0.out
 cp -r DFT/ DFT_backup/
 
-curl -d "Done running part 0 of QSUBNAME_DFT" ntfy.sh/macchiatoorderup
+# https://ntfy.sh/
+# curl -d "Done running Part 0 of QSUBNAME_DFT" ntfy.sh/MY-NTFY-ADDRESS
 
 # Run the Python script and capture its output
 output=$(python check_simple_cs.py)
@@ -51,7 +52,8 @@ quanty 1_RunQSUBNAMEFPLO_WF.Quanty &> testing_1.out
 # Remove +wancoeff, takes up too much space on the drive
 rm DFT/+wancoeff
 
-curl -d "Done running part 1 of QSUBNAME_DFT" ntfy.sh/macchiatoorderup
+# https://ntfy.sh/
+# curl -d "Done running Part 1 of QSUBNAME_DFT" ntfy.sh/MY-NTFY-ADDRESS
 
 cd "LFMcalc/"
 python write_LFMcalc*.py

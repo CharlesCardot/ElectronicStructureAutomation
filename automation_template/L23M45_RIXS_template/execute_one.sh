@@ -1,10 +1,12 @@
 #!/bin/bash
+set -e
 materials=$(ls materials)
 
 # Copy helper write functions to current dir
 cp $HOME/QuantyScripts/automation/automation_template/write_0.py ./
 cp $HOME/QuantyScripts/automation/automation_template/write_1.py ./
-cp $HOME/QuantyScripts/automation/automation_template/write_LFMcalc_RIXS.py ./
+cp $HOME/QuantyScripts/automation/automation_template/write_LFMcalc_general.py ./
+# cp $HOME/QuantyScripts/automation/automation_template/write_LFMcalc_RIXS.py ./
 
 
 # Function to recursively rename files
@@ -51,7 +53,8 @@ rename_files "${workdir}" "$entry"
 # Copy all python processing files to working directory
 cp write_0.py "${workdir}/" 
 cp write_1.py "${workdir}/" 
-find "${workdir}" -maxdepth 1 -type d -name 'LFMcalc*' -exec cp write_LFMcalc_RIXS.py {}/ \;
+# find "${workdir}" -maxdepth 1 -type d -name 'LFMcalc*' -exec cp write_LFMcalc_RIXS.py {}/ \;
+find "${workdir}" -maxdepth 1 -type d -name 'LFMcalc*' -exec cp write_LFMcalc_general.py {}/ \;
 
 # Edit main file to include material name
 sed -i -e "s/QSUBNAME/${entry}/g" "${workdir}/qsub.script"

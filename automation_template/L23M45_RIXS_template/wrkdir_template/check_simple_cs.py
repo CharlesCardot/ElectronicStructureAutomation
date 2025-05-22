@@ -1,8 +1,5 @@
 import numpy as np
 import os
-import sys
-sys.path.insert(1,"/home/ccardot3/Python_Code/CharlesFunctions/")
-import CharlesFunctions as CF
 import json
 from pathlib import Path
 

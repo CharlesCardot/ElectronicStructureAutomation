@@ -63,171 +63,6 @@ print("The indices of the system are now fixed:")
 print(Index)
 print("")
 
-HDFT_temp = OperatorToMatrix(HDFT)
-HDFT_temp = Matrix.Sub(HDFT_temp, {1,10},{1,10})
-print(HDFT_temp)
-
-function table.val_to_str ( v )
-  if "string" == type( v ) then
-    v = string.gsub( v, "\n", "\\n" )
-    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
-      return "'" .. v .. "'"
-    end
-    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
-  else
-    return "table" == type( v ) and table.tostring( v ) or
-      tostring( v )
-  end
-end
-
-function table.key_to_str ( k )
-  if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
-    return k
-  else
-    return "[" .. table.val_to_str( k ) .. "]"
-  end
-end
-
-function table.tostring( tbl )
-  local result, done = {}, {}
-  for k, v in ipairs( tbl ) do
-    table.insert( result, table.val_to_str( v ) )
-    done[ k ] = true
-  end
-  for k, v in pairs( tbl ) do
-    if not done[ k ] then
-      table.insert( result,
-        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
-    end
-  end
-  return "{" .. table.concat( result, "," ) .. "}"
-end
-
-
-print(HDFT_temp)
-file = io.open("H_10x10.dat", "w")
-file:write(table.tostring(HDFT_temp))
-file:close()
-
-os.execute('python3 diag_mat.py')
--------------------------------------------------------------
-
--- see if the file exists
-function file_exists(file)
-  local f = io.open(file, "rb")
-  if f then f:close() end
-  return f ~= nil
-end
-
--- get all lines from a file, returns an empty
--- list/table if the file does not exist
-function lines_from(file)
-  if not file_exists(file) then return {} end
-  local lines = {}
-  for line in io.lines(file) do
-    lines[#lines + 1] = line
-  end
-  return lines
-end
-
-function split (inputstr, sep)
-   if sep == nil then
-      sep = "%s"
-   end
-   local t={}
-   for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-      table.insert(t, str)
-   end
-   return t
-end
-
-function multiply_arrs(arr1, arr2)
-    if #arr1 ~= #arr2 then
-        print("arr1 and arr2 have different lengths!")
-        print("Index-wise multiplication is not defined for these arrays")
-        return
-    end
-
-    local temp = {}
-    for key,value in pairs(arr1) do
-        table.insert(temp, value * arr2[key])
-    end
-    return temp
-end
-
-table.sum = function (arr)
-    local temp = 0
-    for k,v in pairs(arr) do
-        temp = temp + v
-    end
-    return temp
-end
-
--- Make numerical array of new operators
-local file = 'new_opps.txt'
-local lines = lines_from(file)
-
-new_opps = {}
--- print all line numbers and their contents
-for k,line in pairs(lines) do
-    split_line = split(line)
-    for key,val in pairs(split_line) do
-        val = val:gsub(",","")
-        split_line[key] = tonumber(val)
-    end
-    table.insert(new_opps,split_line)
-end
-
-print(new_opps)
-
-OppAn_d1 = NewOperator("An",NFermi,0)
-OppAn_d2 = NewOperator("An",NFermi,1)
-OppAn_d3 = NewOperator("An",NFermi,2)
-OppAn_d4 = NewOperator("An",NFermi,3)
-OppAn_d5 = NewOperator("An",NFermi,4)
-OppAn_d6 = NewOperator("An",NFermi,5)
-OppAn_d7 = NewOperator("An",NFermi,6)
-OppAn_d8 = NewOperator("An",NFermi,7)
-OppAn_d9 = NewOperator("An",NFermi,8)
-OppAn_d10 = NewOperator("An",NFermi,9)
-
-
-d_OppAn_arr = {OppAn_d1, OppAn_d2, OppAn_d3, OppAn_d4, OppAn_d5, OppAn_d6, OppAn_d7, OppAn_d8, OppAn_d9, OppAn_d10}
-
-psi = NewWavefunction(NFermi, 0, {{"1111111111 0000000000 000000 00",1}})
-
-
-new_OppAn_d1 = table.sum(multiply_arrs(new_opps[1],d_OppAn_arr))
-new_OppAn_d2 = table.sum(multiply_arrs(new_opps[2],d_OppAn_arr))
-new_OppAn_d3 = table.sum(multiply_arrs(new_opps[3],d_OppAn_arr))  
-new_OppAn_d4 = table.sum(multiply_arrs(new_opps[4],d_OppAn_arr)) 
-new_OppAn_d5 = table.sum(multiply_arrs(new_opps[5],d_OppAn_arr))
-new_OppAn_d6 = table.sum(multiply_arrs(new_opps[6],d_OppAn_arr))
-new_OppAn_d7 = table.sum(multiply_arrs(new_opps[7],d_OppAn_arr))
-new_OppAn_d8 = table.sum(multiply_arrs(new_opps[8],d_OppAn_arr))
-new_OppAn_d9 = table.sum(multiply_arrs(new_opps[9],d_OppAn_arr)) 
-new_OppAn_d10 = table.sum(multiply_arrs(new_opps[10],d_OppAn_arr))
-
-new_d_OppAn_arr = {new_OppAn_d1, new_OppAn_d2, new_OppAn_d3, new_OppAn_d4, new_OppAn_d5, 
-    new_OppAn_d6, new_OppAn_d7, new_OppAn_d8, new_OppAn_d9, new_OppAn_d10}
-
-temp = 0
-for k,v in pairs(new_d_OppAn_arr) do
-    temp = temp + v
-end
-print(psi * ConjugateTranspose(temp) * temp * psi)
-
--- Checking for unit length
-for k,arr in pairs(new_opps) do
-    print(math.sqrt(table.sum(multiply_arrs(arr,arr))))
-end
-
-new_OppN_d12 = ConjugateTranspose(new_d_OppAn_arr[1]) * new_d_OppAn_arr[1] + ConjugateTranspose(new_d_OppAn_arr[2]) * new_d_OppAn_arr[2]
-new_OppN_d34 = ConjugateTranspose(new_d_OppAn_arr[3]) * new_d_OppAn_arr[3] + ConjugateTranspose(new_d_OppAn_arr[4]) * new_d_OppAn_arr[4]
-new_OppN_d56 = ConjugateTranspose(new_d_OppAn_arr[5]) * new_d_OppAn_arr[5] + ConjugateTranspose(new_d_OppAn_arr[6]) * new_d_OppAn_arr[6]
-new_OppN_d78 = ConjugateTranspose(new_d_OppAn_arr[7]) * new_d_OppAn_arr[7] + ConjugateTranspose(new_d_OppAn_arr[8]) * new_d_OppAn_arr[8]
-new_OppN_d910 = ConjugateTranspose(new_d_OppAn_arr[9]) * new_d_OppAn_arr[9] + ConjugateTranspose(new_d_OppAn_arr[10]) * new_d_OppAn_arr[10]
-
 
 -- Next we need to correct for the double counting (i.e. subtract the DFT Mean-field approximation of the Coulomb interaction)
 print("--Subtract the DFT Mean-field Coulomb interaction between the d electrons from the tight-binding Hamiltonian--\n")
@@ -276,8 +111,8 @@ print("--Set the parameters--\n")
 nd = NUMBER_OF_D
 Delta = DDDD
 Udd = UUUU
-Upd = 1.16*Udd
-Usd = 1.2*Udd
+Upd = 1.2*Udd
+Usd = 1.3*Udd
 --The slater integrals are calculated using the radial functions generated by FPLO, which can be read within Quanty:
 correlatedRadialFunctionss = ReadFPLOBasisFunctions({"1s"},"DFT_PATH/+fcor.TM_NUMBER.1")
 correlatedRadialFunctionsp = ReadFPLOBasisFunctions({"2p"},"DFT_PATH/+fcor.TM_NUMBER.1")
@@ -303,12 +138,13 @@ F0sd    = Usd
 
 -- Magnetic field
 Bz = 0.1 * EnergyUnits.Tesla.value
-Hz = 0
+
 -- Spin orbit
 zeta_3d =  TM_ZETA_3D
 zeta_2p =  TM_ZETA_2P
 
 
+---------------------------------------------------------------------------------------------------
 print("Parameters:")
 print("nd = "..nd)
 print("Delta fit to exp = "..Delta.." eV")
@@ -316,7 +152,6 @@ print("Udd fit to exp= "..Udd.." eV")
 print("Upd fit to exp = "..Upd.." eV")
 print("Usd fit to exp = "..Usd.." eV")
 print("Bz = "..Bz.." eV")
-print("Hz = "..Hz.." eV")
 print("zeta_3d = "..zeta_3d.." eV")
 print("zeta_2p = "..zeta_2p.." eV")
 print("")
@@ -337,6 +172,50 @@ print("F0dd fit to exp = "..F0dd.." eV")
 print("F0pd fit to exp = "..F0pd.." eV")
 print("F0sd fit to exp = "..F0sd.." eV")
 print("")
+
+function table.val_to_str ( v )
+  if "string" == type( v ) then
+    v = string.gsub( v, "\n", "\\n" )
+    if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
+      return "'" .. v .. "'"
+    end
+    return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
+  else
+    return "table" == type( v ) and table.tostring( v ) or
+      tostring( v )
+  end
+end
+
+function table.key_to_str ( k )
+  if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
+    return k
+  else
+    return "[" .. table.val_to_str( k ) .. "]"
+  end
+end
+
+function table.tostring( tbl )
+  local result, done = {}, {}
+  for k, v in ipairs( tbl ) do
+    table.insert( result, table.val_to_str( v ) )
+    done[ k ] = true
+  end
+  for k, v in pairs( tbl ) do
+    if not done[ k ] then
+      table.insert( result,
+        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+    end
+  end
+  return "{" .. table.concat( result, "," ) .. "}"
+end
+
+HDFT_temp = OperatorToMatrix(HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT)
+HDFT_temp = Matrix.Sub(HDFT_temp, {1,10},{1,10})
+file = io.open("H_10x10.dat", "w")
+file:write(table.tostring(HDFT_temp))
+file:close()
+---------------------------------------------------------------------------------------------------
+
 
 
 -- define some aditional operators
@@ -400,6 +279,7 @@ print("--Define Initial State Hamiltonian--\n")
 InitHamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDFT
         + F0dd * OppF0 + F2dd * OppF2 + F4dd * OppF4
         + Bz * (2*OppSz + OppLz) + zeta_3d * Oppldots_3d
+
 InitHamiltonian = InitHamiltonian/2
 InitHamiltonian = InitHamiltonian + ConjugateTranspose(InitHamiltonian)
 
@@ -417,6 +297,7 @@ XASHamiltonian = HDFT - F0dd * OppF0MFDFT - F2dd * OppF2MFDFT - F4dd * OppF4MFDF
 
 XASHamiltonian = XASHamiltonian + zeta_2p * Oppldots_2p
             + F0pd * OppUpdF0 + F2pd * OppUpdF2 + G1pd * OppUpdG1 + G3pd * OppUpdG3
+
 XASHamiltonian = XASHamiltonian/2
 XASHamiltonian = XASHamiltonian + ConjugateTranspose(XASHamiltonian)
              
@@ -445,7 +326,6 @@ StartRestrictions = {NFermi, 0, {DeterminantString(NFermi,Index["TM_ELEMENT_1s"]
 
 psiList = Eigensystem(InitHamiltonian, StartRestrictions, Npsi, {{'Zero',1e-06},{'Epsilon',1e-06}})
 psiList = Chop(psiList)
-print(StartRestrictions)
 
 -- print of some expectation values
 InitHamiltonian.Name = "<E>"
@@ -469,38 +349,13 @@ OppN_TM_ELEMENT_xy.Name = "<3x_xy>"
 OppN_TM_ELEMENT_x2y2.Name = "<3d_x2y2>"
 OppN_TM_ELEMENT_z2.Name = "<3x_z2>"
 
-new_OppN_d12.Name = "<3d12_new>"
-new_OppN_d34.Name = "<3d34_new>"
-new_OppN_d56.Name = "<3d56_new>"
-new_OppN_d78.Name = "<3d78_new>" 
-new_OppN_d910.Name = "<3d910_new>"
-
-total_sum = new_OppN_d12 + new_OppN_d34 + new_OppN_d56 + new_OppN_d78 + new_OppN_d910
-total_sum.Name = "<tot_sum>"
-
-
 OppN_TM_ELEMENT_3dUp.Name = "<N_TM_ELEMENT_dUp>"
 OppN_TM_ELEMENT_3dDn.Name = "<N_TM_ELEMENT_dDn>"
 
 oppList={InitHamiltonian, OppSz, OppLz, OppJz, OppSsqr, OppLsqr, OppJsqr, 
-OppN_TM_ELEMENT_eg, OppN_TM_ELEMENT_t2g, OppN_TM_ELEMENT_3dUp, OppN_TM_ELEMENT_3dDn, 
+-- OppN_TM_ELEMENT_eg, OppN_TM_ELEMENT_t2g, OppN_TM_ELEMENT_3dUp, OppN_TM_ELEMENT_3dDn, 
 OppN_TM_ELEMENT_yz, OppN_TM_ELEMENT_xz, OppN_TM_ELEMENT_xy, OppN_TM_ELEMENT_x2y2, OppN_TM_ELEMENT_z2,
-new_OppN_d12, new_OppN_d34, new_OppN_d56, new_OppN_d78, new_OppN_d910,
-total_sum, OppD, OppN_TM_ELEMENT, OppN_Ligand}
-
-num_Opps = {new_OppN_d12, new_OppN_d34, new_OppN_d56, new_OppN_d78, new_OppN_d910}
-unp3d = 0
-for k,v in pairs(num_Opps) do
-    exp_val = Complex.Re(psiList[1] * v * psiList[1])
-    print(exp_val)
-    if exp_val < 1 then
-        unp3d = unp3d + exp_val
-    elseif 1 < exp_val and exp_val < 2 then
-        unp3d = unp3d + 2 - exp_val
-    end
-end
-print("Number of unpaired 3d: "..unp3d.."")
-PrintExpectationValues(psiList,oppList,{{"ColWidth",10}})
+OppD, OppN_TM_ELEMENT, OppN_Ligand}
 
 
 -- Making sure that all thermally accessible states are included in psiList
@@ -514,16 +369,16 @@ while dZ > 0.01 do
     Npsi = Npsi + 4
     print("Npsi", Npsi)
 	
-	StartRestrictions = {NFermi, 0, {DeterminantString(NFermi,Index["TM_ELEMENT_1s"]),2,2},
-	{DeterminantString(NFermi,Index["TM_ELEMENT_3d"],Index["Ligand_d"]),10+nd,10+nd},
-	{DeterminantString(NFermi,Index["TM_ELEMENT_2p"]),6,6}}
-    
+   
     psiList = Eigensystem(InitHamiltonian, StartRestrictions, Npsi, {{'Zero',1e-06},{'Epsilon',1e-06}})
     psiList = Chop(psiList)
-    PrintExpectationValues(psiList,oppList,{{"ColWidth",10}})
+
     Egrd = psiList[1] * InitHamiltonian * psiList[1]
     dZ = exp(-(psiList[#psiList] * InitHamiltonian * psiList[#psiList] - Egrd)/T)
 end
+
+print(StartRestrictions)
+PrintExpectationValues(psiList,oppList,{{"ColWidth",10}})
 
 print("\n--Initial State Energies--")
 Energies = {}
