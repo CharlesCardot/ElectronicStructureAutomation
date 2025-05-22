@@ -18,17 +18,20 @@ would be using Corvus (https://github.com/times-software/Corvus).
 ### Getting Started
 
 The automation scripts expect the following folder structure
+```
 automation/
 ├── automation_template/
 ├── YOUR-PROJECT-DIRECTORY/
 ├── utils/
 └── README.md
+```
 
 
 Templates for automation pipelines are in the `automation_template` folder. Copy the one you would like to
 use (ex: `automation_template/XAS_XES_XPS`) into the `automation` directory. This will be your main project
 directory in which the automation scripts will run. Inside it will look something like
 
+```
 XES_XAS_XPS/
 ├── execute_all.sh
 ├── execute_one.sh
@@ -55,6 +58,7 @@ XES_XAS_XPS/
 │   ├── plot_dos_jank.py
 │   ├── plot_utils.py
 │   └── qsub.script
+```
 
 Assuming that your environment is perfectly set up, all that is needed from a user is to create a folder
 in `materials` for each 3d transition metal crystal they'd like to calculate. The .cif provides all the
