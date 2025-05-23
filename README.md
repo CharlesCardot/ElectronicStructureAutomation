@@ -101,3 +101,54 @@ just work out of the box, but some dependency debugging may be needed.
 commented out, but if you have issues try updating to the latest stable version.
 of pymatgen.
 
+### Completed Run Example: NiO
+
+An example of the output of the full pipeline for a single material is shown in the `output/NiO` folder in `XAS_XES_XPS_example`.
+The output summary plots for the run can be seen in [📄 View NiO Summary (PDF)](XAS_XES_XPS_example/output/NiO/NiO_summary.pdf). 
+This is created using `make_job_plots.py`.
+
+```
+NiO/
+├── 0_RunNiOFPLO.Quanty
+├── 1_RunNiOFPLO_WF.Quanty
+├── DFT/
+│   ├── +TNi_1_3dx2-y2.spin1
+│   ├── +TNi_1_3dxy.spin1
+│   ├── +TO_2_2px.spin1
+│   ├── +out.wan
+│   ├── +dos.total.l001
+│   ├── +fkcor.001.1
+│   └── ...
+├── DFT_backup/
+├── LFMcalc_general/
+│   ├── H_10x10.dat
+│   ├── XAS.dat
+│   ├── XES.dat
+│   ├── XPS.dat
+│   ├── plot_XAS.py
+│   ├── plot_XES.py
+│   ├── plot_XPS.py
+│   ├── write_LFMcalc_general.py
+│   ├── QueueStuff/
+│   ├── analyze_H_10x10.py
+│   ├── edit_script.py
+│   ├── diag_mat.py
+│   ├── quanty.serr
+│   ├── quanty.sout
+│   ├── script.Quanty
+│   └── ...
+├── NiO_plots/
+├── NiO_summary.pdf
+├── __pycache__/
+├── check_simple_cs.py
+├── make_job_plots.py
+├── plot_dos_jank.py
+├── plot_utils.py
+├── qsub.script
+├── quanty.serr
+├── quanty.sout
+├── testing_0.out
+├── testing_1.out
+├── write_0.py
+└── write_1.py
+```

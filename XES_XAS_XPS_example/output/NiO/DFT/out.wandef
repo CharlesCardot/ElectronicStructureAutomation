@@ -1,0 +1,2527 @@
+------------------------------------------------------------------------
+|                                                                      |
+|    FULL-POTENTIAL LOCAL-ORBITAL MINIMUM BASIS BANDSTRUCTURE CODE     |
+|                      FULL RELATIVISTIC VERSION                       |
+|                                                                      |
+|             by K. Koepernik, A.Ernst and H.Eschrig (2003)            |
+|                  relativistic version by Ingo Opahle                 |
+|                       LSDA+U by Igor Chaplygin                       |
+|                                                                      |
+------------------------------------------------------------------------
+|                                                                      |
+|   Any publication of results obtained by this program                |
+|   has to include the citation:                                       |
+|                                                                      |
+|        K.Koepernik and H.Eschrig, Phys. Rev. B 59, 1743 (1999)       |
+|                                                                      |
+|   Any publication of CPA results obtained by this program            |
+|   additionally has to include the citation:                          |
+|                                                                      |
+|        K. Koepernik, B. Velicky, R. Hayn and H. Eschrig,             |
+|        Phys. Rev. B 55, 5717 (1997)                                  |
+|                                                                      |
+|                                                                      |
+------------------------------------------------------------------------
+|                                                                      |
+| main version: 14.00                                                  |
+| sub  version: M-CPA                                                  |
+| release     : 49                                                     |
+|                                                                      |
+------------------------------------------------------------------------
+| compiled with gfortran 8.4.1                                         |
+------------------------------------------------------------------------
+|                                                                      |
+------------------------------------------------------------------------
+| date        : Fri May 23 15:21:26 2025                               |
+| host        : macchiato.phys.washington.edu                          |
+------------------------------------------------------------------------
+File =.sym exists!
+File =.in exists!
+------------------------------------------------------------------------
+Compound: NiO
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+Start: content of =.in
+------------------------------------------------------------------------
+########################################################################
+# this file is part of the FPLO bandstructure package
+# it was created automatically
+# please dont delete this file nor
+# edit it directly, unless you really know what you are doing
+# Use FEDIT to change its content
+#
+########################################################################
+section header{
+
+    struct {char[*] mainversion;char[*] subversion;} version
+    ={"14.00","M-CPA"};
+
+
+    struct {char[*] hostname;char[*] date;char[*] by;} last_changes
+    ={"macchiato.phys.washington.edu","Fri May 23 15:21:06 2025","fedit (14.00-49-x86_64)"};
+
+    char[*] compound="NiO";
+};
+
+
+section structure_information{
+
+    struct {int type;char[*] description;} structure_type
+    ={1,"Crystal"};
+
+
+    struct {int number;char[*] symbol;} spacegroup
+    ={225,"FM3M"};
+
+    int subgroupgenerators[*]={
+    };
+
+    struct {int type;char[*] description;} lengthunit
+    ={2,"Angstroem"};
+
+    real lattice_constants[3]={4.21661958,4.21661958,4.21661958
+    };
+    real axis_angles[3]={90.00000000,90.00000000,90.00000000
+    };
+    int max_L=4;
+    int nsort=2;
+
+    struct {char[2] element;real tau[3];} wyckoff_positions[nsort]
+    ={
+        {"Ni",{0.00000000,0.00000000,0.00000000}}
+        ,{"O",{0.00000000,0.00000000,0.50000000}}
+    };
+
+};
+
+
+section structure_dependend{
+
+    struct {char[2] atom;real concentration;} concentrations[nsort]
+    ={
+        {"Ni",1.0}
+        ,{"O",1.0}
+    };
+
+
+    struct {char[2] element;real split;} initial_spin_split[nsort]
+    ={
+        {"Ni",2.0}
+        ,{"O",2.0}
+    };
+
+
+    struct {int sort;char[2] state;real spinup[7];real spindn[7];} core_occupation[*]
+    ={
+    };
+
+
+    struct {char[20] label;real kpoint[3];} special_sympoints[*]
+    ={
+        {"$~G",{0,0,0}}
+        ,{"X",{1,0,0}}
+        ,{"W",{1,1/2,0}}
+        ,{"K",{3/4,3/4,0}}
+        ,{"$~G",{0,0,0}}
+        ,{"L",{1/2,1/2,1/2}}
+        ,{"W",{1,1/2,0}}
+        ,{"U",{1,1/4,1/4}}
+        ,{"X",{1,0,0}}
+    };
+
+};
+
+
+section mesh{
+
+    struct {int nr;real rmin;real rmax;real rmax_factor;} radial_mesh
+    ={200,1.0e-5,0.0,1.0};
+
+
+    struct {int nr;real rmin;real rmax;} atom_radial_mesh
+    ={2000,1.0e-7,0.0};
+
+};
+
+
+section brillouin{
+
+    struct {logical metal;int nkxyz[3];} bzone_integration
+    ={t,{40,40,40}};
+
+
+    struct {int ne;real range;real width;int norder;} mp_bzone_integration
+    ={1001,5.0,0.005,0};
+
+
+    struct {int type;char[*] description;} bzone_method
+    ={1,"tetrahedron method"};
+
+    real bzone_kT=100.0;
+    int nband=-1;
+};
+
+
+section bandstructure_plot{
+
+    struct {logical bandplot;logical read_sympoints;int ndivisions;real emin;real emax;int nptdos;logical plot_idos;logical plot_ndos;logical restrict_bands_to_window;logical coeffout;} bandplot_control
+    ={t,t,50,-20.0,20.0,1000,f,f,f,f};
+
+
+    struct {logical bandweights;logical bweight_rot;real z_axis[3];real x_axis[3];char[*] bwdfilename;
+        struct {int type;char[*] description;} frelprojection;
+    } bandweight_control
+    ={t,f,{0.0,0.0,1.0},{1.0,0.0,0.0},""
+        ,{1,"jmu"}
+    };
+
+};
+
+
+section iteration_control{
+
+    struct {int steps;real tolerance;real mixing;int maxdim;real progress;} iteration_control
+    ={100,1.e-10,0.4,5,0.1};
+
+
+    struct {int scheme;char[*] description;} iteration_version
+    ={2,"Iterat   : Hyperspace interpolation"};
+
+
+    struct {int type;char[*] description;} iteration_convergence_condition
+    ={2,"Density"};
+
+    real etot_tolerance=1.e-8;
+    # ratio of things put into iteration vector compared
+    # to density
+
+    struct {real U;} iterationvector_ratio
+    ={1.0};
+
+};
+
+
+section forces{
+
+    struct {int steps;real tolerance;int maxdim;} force_iteration_control
+    ={100,1.0e-3,0};
+
+
+    struct {int scheme;char[*] description;} force_iteration_version
+    ={6,"MinIterat: Find minimum with iterat"};
+
+    logical force_in_each_step=f;
+    logical approx_nodndL_ewald=f;
+
+    struct {int mode;char[*] description;} force_mode
+    ={1,"No forces"};
+
+    int geomopt_sites[*]={
+    };
+};
+
+
+section options{
+
+    struct {int mspin;logical initial_spin_split;} spin
+    ={1,f};
+
+
+    struct {int type;char[*] description;} xc_potential
+    ={9,"Perdew Wang 92               (LSDA)"};
+
+    real ex_field_strength=1.0;
+
+    struct {int type;char[*] description;} relativistic
+    ={2,"scalar relativistic"};
+
+
+    struct {int type;char[*] description;} nuclear_model
+    ={1,"Point charge"};
+
+
+    struct {
+        struct {int type;char[*] description;} chargemode;
+        real ionicity;logical make_vca;
+        struct {int sort;real Z;} vca[*];
+    } charges
+    ={
+         {1,"None"}
+        ,0.0,f
+        ,{
+        }
+    };
+
+
+    struct {int type;char[*] description;} spin_pop_type
+    ={3,"exact expression (expensive)"};
+
+    real quantization_axis[3]={0,0,1
+    };
+    flag options[*]={CALC_DOS(-),NOT_USED(-),FULLBZ(-),CALC_PLASMON_FREQ(-)
+    ,EMPTY_LATTICE_TEST(-),NO_DOS(-),PLOT_REALFUNC(-),PLOT_BASIS(+)
+    ,TEST_LOI(-),TEST_DIAGNO(-),TEST_SYMMETRIZATION(-),TEST_HS_SYM(-)
+    ,PROT_PRINT_BASIS(-),PROT_MAKELATTICE(-),PROT_STRUCTURE_PRNT(-),PROT_TCI(-)
+    ,NOT_USED(-),NOT_USED(-),NOT_USED(-),NO_SYMMETRYTEST(+)
+    ,NO_POTENTIAL(-),NOT_USED(-),NO_CORE(-),NOT_USED(-)
+    ,NO_POPANALYSIS(-),NO_LOI(-),NO_BASIS(-),NO_EFCH(-)
+    ,NOT_USED(-),NOT_USED(-),NOT_USED(-)
+    };
+
+    struct {int type;char[*] description;} verbosity_level
+    ={200,"more information"};
+
+
+    struct {real moment;logical fsm;} fsmoment
+    ={1.0,f};
+
+    logical calc_etot=t;
+};
+
+
+section cpa{
+
+    struct {real emin0;real emax0;int nec;int max_se_loops;real eimag;} cpa_control
+    ={-1.60,0.4,30,10,1.0e-5};
+
+
+    struct {real efermi0;real slop_0;real slop_min;int max_ef_loops;} cpa_fermi_control
+    ={0.08,30.0,0.3,10};
+
+
+    struct {int type;char[*] description;} cpa_fermi_method
+    ={1,"secant method"};
+
+
+    struct {int ne;real eimag;} cpa_dos
+    ={1000,1.e-3};
+
+
+    struct {int ne;real eimag;} cpa_bloch_spectral_density
+    ={100,1.e-3};
+
+};
+
+
+section numerics{
+
+    struct {int degree;} interpolation
+    ={8};
+
+
+    struct {int nr;} one_center_integrals
+    ={200};
+
+
+    struct {int nxi;int neta;} coulomb_energy_calc
+    ={26,46};
+
+
+    struct {int nr;int neta;} overlap_density_calc
+    ={50,20};
+
+
+    struct {real dens;real pot;real orbital;} cutoff_tolerances
+    ={1.e-9,1.e-12,1.e-8};
+
+    #WARNING: cutoff is obsolete now
+
+    struct {real cutoff;real eps_r;real eps_g;} ewald_parameter
+    ={2.0,1.0e-5,1.0e-5};
+
+
+    struct {real tol;} symtest
+    ={5.0e-13};
+
+    # WARNING: nfft_ewp_per_site is obsolete now
+    int nfft_ewp_per_site=-500;
+};
+
+
+section LSDA_U{
+    logical make_lsdau=f;
+
+    struct {int type;char[*] description;} lsdau_projection
+    ={1,"orthogonal"};
+
+
+    struct {int type;char[*] description;} lsdau_functional
+    ={1,"LSDA+U Around mean field (AMF/OP)"};
+
+
+    struct {int type;char[*] description;} lsdau_dmat_mode
+    ={1,"self consistent"};
+
+    real lsdau_dmat_deviation=1.e-2;
+
+    struct {int sort;char[2] state;real f_slater[4];} lsdau_defs[*]
+    ={
+    };
+
+};
+
+
+section OPC{
+    logical make_opc=f;
+
+    struct {int type;char[*] description;} opc_projection
+    ={1,"orthogonal"};
+
+
+    struct {int type;char[*] description;} opc_functional
+    ={1,"Spin dependend (Nordstroem, Brooks, Johansson, JPhysC 4, 3261 (1992))"};
+
+
+    struct {int sort;char[2] state;} opc_defs[*]
+    ={
+    };
+
+};
+
+
+section Advanced_output{
+    int ldossites[*]={
+    };
+    logical grids_active=f;
+    logical grids_stop_after=f;
+
+    struct {
+        struct {int type;char[*] description;} basis;
+        real direction1[3];real direction2[3];real direction3[3];real origin[3];int subdivision[3];char[*] file;logical InclPeriodicPoints;logical createOpenDX;
+        struct {int type;char[*] description;} quantities[*];
+        struct {int type;char[*] description;} outputdata[*];
+        real scfwavefnctwindow[2];
+        struct {char[*] name;
+            struct {real emin;real emax;real de;
+                struct {int type;char[*] description;} spin;
+            } sections[*];
+        } energywindows[*];
+        struct {char[*] name;real kpoint[3];int bandindices[*];real energywindow[2];} kresolved[*];
+    } grids[*]
+    ={
+    };
+
+
+    struct {logical active;} topological_insulator
+    ={f};
+
+
+    struct {logical active;logical jointdos;logical bandoutput;logical stopafter;
+        struct {int ne;real emin;real emax;} energy;
+    } optics
+    ={f,f,f,f
+        ,{1000,0,10}
+    };
+
+};
+
+
+------------------------------------------------------------------------
+End  : content of =.in
+------------------------------------------------------------------------
+========================================================================
+                      CALCULATION OF CRYSTALL STRUCTURE
+
+------------------------------------------------------------------------
+                                INPUT DATA
+
+------------------------------------------------------------------------
+Unit of length    : Angstroem
+Spacegroup        :  225 - FM3M
+Lattice constants : 4.21661958  4.21661958  4.21661958
+Axis angles       : 90.00000000 90.00000000 90.00000000
+
+               Wyckoff positions
+
+Number of Wyckoff positions :    2
+No.   Element   X          Y          Z
+   1    Ni      0.00000000 0.00000000 0.00000000
+   2    O       0.00000000 0.00000000 0.50000000
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+                            SYMMETRY CREATION
+
+------------------------------------------------------------------------
+
+                   SYMMETRYGROUP
+
+Space group      : 225 - FM3M
+Point group      :  37 - OH
+Inversion        : yes
+Symmorphic       : yes
+
+                   OPERATIONS
+
+
+(The XYZ-operation symbols "(A,B,C)+(t1,t2,t3)" mean:
+ if a vector is given relative to the lattice basis vectors
+ r=X*a1+Y*a2+Z*a3 then it is transformed into
+ r'=(A+t1)*a1+(B+t2)*a2+(C+t3)*a2,
+ for RTG lattices the operations refer to the corresponding
+ STG unit cell!)
+
+
+Group Generators      : 3
+Index   rotation          translation      : symbol
+14:   (-Y  ,+X  ,+Z  ) + (0   ,0   ,0   )  :   C1/4(z)
+ 9:   (+Z  ,+X  ,+Y  ) + (0   ,0   ,0   )  :   C1/3(111)
+32:   (-X  ,-Y  ,-Z  ) + (0   ,0   ,0   )  :   I
+
+Full Group Operations : 48
+Index   rotation          translation      : symbol
+ 0:   (+X  ,+Y  ,+Z  ) + (0   ,0   ,0   )  :   E
+ 1:   (-X  ,+Y  ,-Z  ) + (0   ,0   ,0   )  :   C2(y)
+ 2:   (+X  ,-Y  ,-Z  ) + (0   ,0   ,0   )  :   C2(x)
+ 3:   (-X  ,-Y  ,+Z  ) + (0   ,0   ,0   )  :   C2(z)
+ 4:   (-Y  ,+Z  ,-X  ) + (0   ,0   ,0   )  :   C1/3(-111)
+ 5:   (-Y  ,-Z  ,+X  ) + (0   ,0   ,0   )  :   C1/3(1-11)
+ 6:   (+Y  ,-Z  ,-X  ) + (0   ,0   ,0   )  :   C2/3(-1-11)
+ 7:   (+Y  ,+Z  ,+X  ) + (0   ,0   ,0   )  :   C2/3(111)
+ 8:   (-Z  ,-X  ,+Y  ) + (0   ,0   ,0   )  :   C2/3(-111)
+ 9:   (+Z  ,+X  ,+Y  ) + (0   ,0   ,0   )  :   C1/3(111)
+10:   (+Z  ,-X  ,-Y  ) + (0   ,0   ,0   )  :   C2/3(1-11)
+11:   (-Z  ,+X  ,-Y  ) + (0   ,0   ,0   )  :   C1/3(-1-11)
+12:   (+Y  ,+X  ,-Z  ) + (0   ,0   ,0   )  :   C2(xy)
+13:   (+Y  ,-X  ,+Z  ) + (0   ,0   ,0   )  :   C3/4(z)
+14:   (-Y  ,+X  ,+Z  ) + (0   ,0   ,0   )  :   C1/4(z)
+15:   (-Y  ,-X  ,-Z  ) + (0   ,0   ,0   )  :   C2(x-y)
+16:   (+Z  ,-Y  ,+X  ) + (0   ,0   ,0   )  :   C2(xz)
+17:   (-Z  ,-Y  ,-X  ) + (0   ,0   ,0   )  :   C2(x-z)
+18:   (-Z  ,+Y  ,+X  ) + (0   ,0   ,0   )  :   C3/4(y)
+19:   (+Z  ,+Y  ,-X  ) + (0   ,0   ,0   )  :   C1/4(y)
+20:   (-X  ,-Z  ,-Y  ) + (0   ,0   ,0   )  :   C2(y-z)
+21:   (+X  ,+Z  ,-Y  ) + (0   ,0   ,0   )  :   C3/4(x)
+22:   (-X  ,+Z  ,+Y  ) + (0   ,0   ,0   )  :   C2(yz)
+23:   (+X  ,-Z  ,+Y  ) + (0   ,0   ,0   )  :   C1/4(x)
+32:   (-X  ,-Y  ,-Z  ) + (0   ,0   ,0   )  :   I
+33:   (+X  ,-Y  ,+Z  ) + (0   ,0   ,0   )  :   s(y)
+34:   (-X  ,+Y  ,+Z  ) + (0   ,0   ,0   )  :   s(x)
+35:   (+X  ,+Y  ,-Z  ) + (0   ,0   ,0   )  :   s(z)
+36:   (+Y  ,-Z  ,+X  ) + (0   ,0   ,0   )  :   S5/6(-111)
+37:   (+Y  ,+Z  ,-X  ) + (0   ,0   ,0   )  :   S5/6(1-11)
+38:   (-Y  ,+Z  ,+X  ) + (0   ,0   ,0   )  :   S1/6(-1-11)
+39:   (-Y  ,-Z  ,-X  ) + (0   ,0   ,0   )  :   S1/6(111)
+40:   (+Z  ,+X  ,-Y  ) + (0   ,0   ,0   )  :   S1/6(-111)
+41:   (-Z  ,-X  ,-Y  ) + (0   ,0   ,0   )  :   S5/6(111)
+42:   (-Z  ,+X  ,+Y  ) + (0   ,0   ,0   )  :   S1/6(1-11)
+43:   (+Z  ,-X  ,+Y  ) + (0   ,0   ,0   )  :   S5/6(-1-11)
+44:   (-Y  ,-X  ,+Z  ) + (0   ,0   ,0   )  :   s(xy)
+45:   (-Y  ,+X  ,-Z  ) + (0   ,0   ,0   )  :   S1/4(z)
+46:   (+Y  ,-X  ,-Z  ) + (0   ,0   ,0   )  :   S3/4(z)
+47:   (+Y  ,+X  ,+Z  ) + (0   ,0   ,0   )  :   s(x-y)
+48:   (-Z  ,+Y  ,-X  ) + (0   ,0   ,0   )  :   s(xz)
+49:   (+Z  ,+Y  ,+X  ) + (0   ,0   ,0   )  :   s(x-z)
+50:   (+Z  ,-Y  ,-X  ) + (0   ,0   ,0   )  :   S1/4(y)
+51:   (-Z  ,-Y  ,+X  ) + (0   ,0   ,0   )  :   S3/4(y)
+52:   (+X  ,+Z  ,+Y  ) + (0   ,0   ,0   )  :   s(y-z)
+53:   (-X  ,-Z  ,+Y  ) + (0   ,0   ,0   )  :   S1/4(x)
+54:   (+X  ,-Z  ,-Y  ) + (0   ,0   ,0   )  :   s(yz)
+55:   (-X  ,+Z  ,-Y  ) + (0   ,0   ,0   )  :   S3/4(x)
+
+                   TRANSLATION
+
+lattice constants:  7.968256179485497      7.968256179485497      7.968256179485497
+axis angles      :  90.000000000000000     90.000000000000000     90.000000000000000
+bravais lattice  : FCC
+primitive to bravais transformation
+      b1  : 0    1/2  1/2
+      b2  : 1/2  0    1/2
+      b3  : 1/2  1/2  0
+unit vectors of primitive lattice (SC)
+      u1  :  1.000000000000000      0.000000000000000      0.000000000000000
+      u2  :  0.000000000000000      1.000000000000000      0.000000000000000
+      u3  :  0.000000000000000      0.000000000000000      1.000000000000000
+lattice vectors
+      a1  :  0.000000000000000      3.984128089742748      3.984128089742748
+      a2  :  3.984128089742748      0.000000000000000      3.984128089742748
+      a3  :  3.984128089742748      3.984128089742748      0.000000000000000
+reciprocial lattice vectors / 2*Pi
+      g1  : -0.125497973141793      0.125497973141793      0.125497973141793
+      g2  :  0.125497973141793     -0.125497973141793      0.125497973141793
+      g3  :  0.125497973141793      0.125497973141793     -0.125497973141793
+
+
+------------------------------------------------------------------------
+                              UNIT CELL CREATION
+
+------------------------------------------------------------------------
+
+               Wyckoff positions
+Number of Wyckoff positions :    2
+No.   Element    X                      Y                      Z                      Concentration
+   1    Ni      -0.000000000000000     -0.000000000000000     -0.000000000000000      1.000000000000000
+   2    O       -0.000000000000000     -0.000000000000000      0.500000000000000      1.000000000000000
+
+
+                 Atom sites
+
+Number of sites :    2
+Number of real sites :    2
+Number of nonempty real sites :    2
+No.  Element WPS CPA-Block    X                      Y                      Z
+   1   Ni     1      1       -0.000000000000000     -0.000000000000000     -0.000000000000000
+   2   O      2      2       -0.000000000000000     -0.000000000000000     -3.984128089742748
+
+Structure type: Crystal
+
+
+Averaged WS radius :    2.47156 Bohr radii
+Vuc                :            126.482334639323980 Bohr radii
+
+
+------------------------------------------------------------------------
+
+========================================================================
+------------------------------------------------------------------------
+Number of diferent sites (Naps) :     2
+maximum atoms at one site       :     1
+pointer ---    tau(1..3,1..nsite)    --- atoms
+   1          -0.0000 -0.0000 -0.0000        1      isrt :    1 
+                                                    isa  :    1 
+   2          -0.0000 -0.0000 -3.9841        1      isrt :    2 
+                                                    isa  :    2 
+------------------------------------------------------------------------
+
+ ------- mapping of sort onto site ------------
+sort    1 site    1
+sort    2 site    2
+ ----------------------------------------------
+ ------- classification of sorts   ------------
+number of inequivalent sites    2
+icis     1 representing sort    1
+icis     2 representing sort    2
+
+number of inequivalent atoms    2
+sort    1 representing sort    1
+sort    2 representing sort    2
+ ----------------------------------------------
+
+========================================================================
+                     RADIAL BASIS FUNCTION MESH
+------------------------------------------------------------------------
+  Mesh type        =Root
+------------------------------------------------------------
+ El. sort        nr      rmin     default_rmax   factor     rmax 
+ Ni     1       200    0.100E-05    6.960668   1.000000   6.960668
+ O      2       200    0.100E-05    7.568725   1.000000   7.568725
+
+========================================================================
+
+Nuclear charges
+site sort real-site El  nuclear-charge averaged-charge
+   1    1    1      Ni      28.00000    28.00000
+   2    2    2      O        8.00000     8.00000
+------------------------------------------------------------------------
+Start: content of =.basdef
+------------------------------------------------------------------------
+    1 P=(0.6142); N=(14); 1s2s2p: /  S3s Q=(0) P=(1);  S3p Q=(0) P=(1);  D4s Q=(0,3.25) P=(0.92,0.87);  D3d Q=(0,3.167) P=(0.923,1.05);  S4p Q=(2.303) P=(1.07);
+    2 P=(0.66); N=(14); :  S1s Q=(0) P=(1); /  D2s Q=(0,3.496) P=(0.857,0.671);  D2p Q=(0,2.684) P=(0.95,0.821);  S3d Q=(7.131) P=(0.95);
+------------------------------------------------------------------------
+End  : content of =.basdef
+------------------------------------------------------------------------
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+         Vatom-classes and ionicities
+--------------------------------------------------------------------------
+   sort     state           vat-class   Q      S     N       p        px
+--------------------------------------------------------------------------
+    1 Ni     1 1s      core     1   0.0000   0.0000  0.00   0.0000   0.0000
+    1 Ni     2 2s      core     1   0.0000   0.0000  0.00   0.0000   0.0000
+    1 Ni     3 2p      core     1   0.0000   0.0000  0.00   0.0000   0.0000
+    1 Ni     1 3s      val      1   0.0000   0.0000 14.00   0.6142   1.0000
+    1 Ni     2 3p      val      1   0.0000   0.0000 14.00   0.6142   1.0000
+    1 Ni     3 4s      val      1   0.0000   0.0000 14.00   0.6142   0.9200
+    1 Ni     4 5s      val      2   3.2500   0.0000 14.00   0.6142   0.8700
+    1 Ni     5 3d      val      1   0.0000   0.0000 14.00   0.6142   0.9230
+    1 Ni     6 4d      val      3   3.1670   0.0000 14.00   0.6142   1.0500
+    1 Ni     7 4p      val      4   2.3030   0.0000 14.00   0.6142   1.0700
+    2 O      1 1s      val      1   0.0000   0.0000 14.00   0.6600   1.0000
+    2 O      2 2s      val      1   0.0000   0.0000 14.00   0.6600   0.8570
+    2 O      3 3s      val      2   3.4960   0.0000 14.00   0.6600   0.6710
+    2 O      4 2p      val      1   0.0000   0.0000 14.00   0.6600   0.9500
+    2 O      5 3p      val      3   2.6840   0.0000 14.00   0.6600   0.8210
+    2 O      6 3d      val      4   7.1310   0.0000 14.00   0.6600   0.9500
+--------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+|   OCCUPATION NUMBERS OF CORE STATES FOR CRYSTAL CALCULATION          |
+------------------------------------------------------------------------
+Sort:   1 Element: Ni
+------------------------------------------------------------------------
+ State  Spin   Occu    M =  -3     -2     -1      0      1      2      3
+  1:1s  up      1.00   :                        1.00
+        down    1.00   :                        1.00
+  2:2s  up      1.00   :                        1.00
+        down    1.00   :                        1.00
+  3:2p  up      3.00   :                 1.00   1.00   1.00
+        down    3.00   :                 1.00   1.00   1.00
+Sort:   2 Element: O 
+------------------------------------------------------------------------
+ State  Spin   Occu    M =  -3     -2     -1      0      1      2      3
+------------------------------------------------------------------------
+
+Number of occupied valence bands (averaged):     26.00000
+
+
+
+ BZMESH:  1661 irreducible k-points from  64000 ( 40 40 40 )
+
+ TETIRR:     63869 inequivalent tetrahedra from    384000
+------------------------------------------------------------------------
+
+make_lattice: N1         7
+make_lattice: N2         7
+make_lattice: N3         7
+
+ LOCAL SITE POTENTIAL IS NONSPHERICAL
+
+AUTOMATIC MODE: TOLERANCE DETERMINED NUMBER OF FOURIER COMPONENTS
+TOLERANCE FOR REAL    SPACE CUTOFF:  0.10E-004
+TOLERANCE FOR FOURIER SPACE CUTOFF:  0.10E-004
+EWALD PARAMETER                   :    0.72287
+MAXIMUM RECIPROCIAL VECTOR NORM   :    6.09919
+ NUMBER OF FT. COMPONENTS FOR EWALD POTENIAL:    531
+
+DIMENSIONS OF MATRICES
+valence matrix dimension                        33
+core    matrix dimension                         5
+max number of valence states per atom           19
+max number of core    states per atom            5
+max number of bands                             33
+    number of k-points                        1661
+size of v-v coefficient matrix             3617658
+size of c-v coefficient matrix              548130
+------------------------------------------------------------------------
+                        matrix index structure
+------------------------------------------------------------------------
+               core block
+ site  El start_index  end_index  length 
+    1  Ni      1           5         5
+    2  O       6           5         0
+              valence block
+ site  El start_index  end_index  length 
+    1  Ni      1          19        19
+    2  O      20          33        14
+------------------------------------------------------------------------
+
+scalar relativistic calculation!
+
+
+XC version :    9 - Perdew Wang 92               (LSDA)  
+
+
+========================================================================
+                     RADIAL BASIS FUNCTION MESH
+------------------------------------------------------------------------
+  Mesh type        =Root
+------------------------------------------------------------
+ El. sort        nr      rmin     default_rmax   factor     rmax 
+ Ni     1       200    0.100E-05    6.960668   1.000000   6.960668
+ O      2       200    0.100E-05    7.568725   1.000000   7.568725
+
+========================================================================
+
+========================================================================
+LOADING DENSITY from file =.dens
+
+ 
+ CPU   : densin: cpu time:           0.00 sec
+ 
+
+END DENSITY LOADING
+========================================================================
+Maximum radial mesh radius :              7.568725443654057
+Maximum LOI Cut-off radius :             15.137450887308114
+Maximum of       pairs: 134
+
+-----------------------------------------------------------------------------
+==========                      STRUCTURE DATA                     ==========
+-----------------------------------------------------------------------------
+| ATOM SITE  R_NN/2    nonempty          SHELLS             NEIGHBOURS      |
+-----------------------------------------------------------------------------
+|  Ni    1      1.9921     1.9921         13                250             |
+-----------------------------------------------------------------------------
+|  O     2      1.9921     1.9921         13                250             |
+-----------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+==========             TABLE OF NEIGHBOURS                           ==========
+-------------------------------------------------------------------------------
+| EL SITE  EL SITE       PAIRS                  SHELLS         RMIN     RMAX  |
+-------------------------------------------------------------------------------
+| Ni   1   Ni   1       134                      7             5.6344  14.9072|
+-------------------------------------------------------------------------------
+| Ni   1   O    2       116                      6             3.9841  14.3650|
+-------------------------------------------------------------------------------
+| O    2   O    2       134                      7             5.6344  14.9072|
+-------------------------------------------------------------------------------
+
+
+============================== START molinit============================== 
+isa=   1
+isa=   2
+Total number of irreducible points:   1020
+Total number of skipped     points:    305
+============================== END   molinit============================== 
+
+
+Preparing basis potentials ...
+(Wanna see details ... set verbosity level to second highest.)
+... Done
+
+------------------------------------------------------------------------
+==========         RELATIVISTIC ATOMIC ENERGIES               ==========
+------------------------------------------------------------------------
+| ATOM  ELECTRON           ENERGY      COMPRESSION     TYPE    SORT    |
+------------------------------------------------------------------------
+|  Ni     1s1 1/2        -301.08963055      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     2s1 1/2         -35.99432576      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     2p1 1/2         -31.43869965      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     2p1 3/2         -30.79772764      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     3s 1/2           -4.05890858  4.275  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3p 1/2           -2.67204539  4.275  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3p 3/2           -2.59043699  4.275  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4s 1/2           -0.12497627  3.933  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     5s 1/2            0.00744265  3.719  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3d 3/2           -0.33802427  3.946  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3d 5/2           -0.32905744  3.946  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4d 3/2           -0.59212965  4.489  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4d 5/2           -0.59050484  4.489  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4p 1/2           -0.68488061  4.575  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4p 3/2           -0.67617611  4.575  14.000 valence   1      |
+------------------------------------------------------------------------
+|  O      1s 1/2          -18.77291319  4.995  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      2s 1/2           -0.87213132  4.281  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3s 1/2           -1.03730950  3.352  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      2p 1/2           -0.33681642  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      2p 3/2           -0.33544337  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3p 1/2           -0.64371082  4.101  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3p 3/2           -0.64305938  4.101  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3d 3/2           -2.87321508  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3d 5/2           -2.87272149  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+==========       SCALARRELATIVISTIC ATOMIC ENERGIES           ==========
+------------------------------------------------------------------------
+|  Ni     1s1            -301.08963055      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     2s1             -35.99432576      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     2p1             -31.01138497      none        core    1      |
+------------------------------------------------------------------------
+|  Ni     3s               -4.05890858  4.275  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3p               -2.61763979  4.275  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4s               -0.12497627  3.933  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     5s                0.00744265  3.719  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     3d               -0.33264417  3.946  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4d               -0.59115477  4.489  14.000 valence   1      |
+------------------------------------------------------------------------
+|  Ni     4p               -0.67907761  4.575  14.000 valence   1      |
+------------------------------------------------------------------------
+|  O      1s              -18.77291319  4.995  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      2s               -0.87213132  4.281  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3s               -1.03730950  3.352  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      2p               -0.33590105  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3p               -0.64327653  4.101  14.000 valence   2      |
+------------------------------------------------------------------------
+|  O      3d               -2.87291892  4.746  14.000 valence   2      |
+------------------------------------------------------------------------
+--------------------------------------------------
+--------------------------------------------------
+bascheck: core    states are o.k.
+bascheck: valence states are o.k.
+
+------------------------------------------------------------------------
+|                  MINIMAL RADIUS FOR THE LOCAL BASIS FUNCTIONS        |
+------------------------------------------------------------------------
+| ATOM   ELECTRON    RMIN_LA  RMIN_SA   RMIN_LD  RMIN_SD  TYPE    SORT |
+------------------------------------------------------------------------
+|  Ni  1s1           0.9223   0.8300    0.0000   0.0000     Core     1 |
+|  Ni  2s1           2.5585   2.1720    0.0000   0.0000     Core     1 |
+|  Ni  2p1           2.6745   2.2494    2.3766   2.0203     Core     1 |
+------------------------------------------------------------------------
+|  Ni                2.6745   2.2494    2.3766   2.0203     Core     1 |
+------------------------------------------------------------------------
+|  Ni  3s            5.6017   5.1624    0.0000   0.0000   Valence    1 |
+|  Ni  3p            5.7788   5.4564    5.5392   5.1029   Valence    1 |
+|  Ni  4s            5.7594   5.5991    0.0000   0.0000   Valence    1 |
+|  Ni  5s            5.6809   5.5022    0.0000   0.0000   Valence    1 |
+|  Ni  3d            5.6785   5.5009    5.3982   5.2483   Valence    1 |
+|  Ni  4d            6.4471   6.2759    6.0261   6.0112   Valence    1 |
+|  Ni  4p            6.5361   6.3452    6.2338   6.0470   Valence    1 |
+------------------------------------------------------------------------
+|  Ni                6.5361   6.3452    6.2338   6.0470   Valence    1 |
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+|  O                 0.0000   0.0000    0.0000   0.0000     Core     2 |
+------------------------------------------------------------------------
+|  O   1s            3.2740   2.6904    0.0000   0.0000   Valence    2 |
+|  O   2s            6.0526   5.8396    0.0000   0.0000   Valence    2 |
+|  O   3s            5.9577   5.6980    0.0000   0.0000   Valence    2 |
+|  O   2p            6.6631   6.4369    6.1638   6.0559   Valence    2 |
+|  O   3p            6.5787   6.3302    6.0372   5.9096   Valence    2 |
+|  O   3d            6.5526   6.2783    5.7876   5.9259   Valence    2 |
+------------------------------------------------------------------------
+|  O                 6.6631   6.4369    6.1638   6.0559   Valence    2 |
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+| max extension of core    states=     2.67447637                      |
+| max extension of valence states=     6.66308414                      |
+| max extension of state         =     6.66308414                      |
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+Start: content of =.wandef
+------------------------------------------------------------------------
+doit
+
+---- real space grid for pictures of WFs ---------------------
+
+WF_grid_basis conv
+WF_grid_directions
+2 0 0
+0 2 0
+0 0 2
+WF_grid_subdivision  1 1 1
+
+-------------------------------------------------
+ham_cutoff 18
+-- the thresholds need to be 0, otherwise the result is symmetry braking
+-- the z^2 orbital has different values for the same hopping from the x^2-y^2 orbital
+-- cutting them by value leads to a different behaviour of the z^2 from the x^2-y^2 orbital
+-- and by hybridization the pz will be different from the px/py or the dxy from the dxz/dyz
+WF_ham_threshold 0
+WF_coeff_threshold 0
+WF_write_coeff_stats on
+ham_write_t_stats on
+
+----- ham export grid --------
+
+k_grid_basis prim
+k_grid_directions
+1 0 0
+0 1 0
+0 0 1
+k_grid_subdivision  1 1 1
+k_grid_incl_periodic_points off
+
+wandef
+on
+  name Ni_1_3dxy
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d-2
+    fac    1
+wandef
+on
+  name Ni_1_3dyz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1
+    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d-1
+    fac    1
+wandef
+on
+  name Ni_1_3dz2
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+0
+    fac    1
+wandef
+on
+  name Ni_1_3dxz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+1
+    fac    1
+wandef
+on
+  name Ni_1_3dx2-y2
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 1    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 3d+2
+    fac    1
+wandef
+on
+  name O_2_2py
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p-1
+    fac    1
+wandef
+on
+  name O_2_2pz
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p+0
+    fac    1
+wandef
+on
+  name O_2_2px
+  emin -8.45
+  emax 1.72
+  de 2.0
+  contrib
+    site 2    difvec 0 0 0
+    xaxis 1 0 0
+    zaxis 0 0 1
+    orb 2p+1
+    fac    1
+------------------------------------------------------------------------
+End  : content of =.wandef
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+                   Wannier definitions
+
+Number of Wannier definitions:    8
+WF_grid_basis       conventional
+
+WF_grid_directions  2 0 0 
+                    0 2 0 
+                    0 0 2 
+WF_grid_subdivisions    1     1     1
+
+WF_grid_origin      0 0 0
+
+ham_cutoff            18.00000
+
+WF_coeff_threshold     0.00000
+
+WF_ham_threshold       0.00000
+
+slab_direction         0.00000    0.00000    0.00000
+
+WF_write_coeff_stats   on 
+ham_write_t_stats      on 
+
+k_grid_basis        primitive
+
+k_grid_directions   1 0 0 
+                    0 1 0 
+                    0 0 1 
+k_grid_subdivisions     1     1     1
+
+k_grid_incl_periodic_points   off
+
+wandef               1
+    name         Ni_1_3dxy        
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -0.00000000
+    contrib          1
+         site        1
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 3d-2
+         ivr         5
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               2
+    name         Ni_1_3dyz        
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -0.00000000
+    contrib          1
+         site        1
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 3d-1
+         ivr         5
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               3
+    name         Ni_1_3dz2        
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -0.00000000
+    contrib          1
+         site        1
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 3d+0
+         ivr         5
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               4
+    name         Ni_1_3dxz        
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -0.00000000
+    contrib          1
+         site        1
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 3d+1
+         ivr         5
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               5
+    name         Ni_1_3dx2-y2     
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -0.00000000
+    contrib          1
+         site        1
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 3d+2
+         ivr         5
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               6
+    name         O_2_2py          
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -3.98412809
+    contrib          1
+         site        2
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 2p-1
+         ivr         4
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               7
+    name         O_2_2pz          
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -3.98412809
+    contrib          1
+         site        2
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 2p+0
+         ivr         4
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+wandef               8
+    name         O_2_2px          
+    emin             -8.45000000
+    emax              1.72000000
+    delower           2.00000000
+    deupper           2.00000000
+    lband              0       0
+    uband              0       0
+         center      -0.00000000      -0.00000000      -3.98412809
+    contrib          1
+         site        2
+         difvec       0.00000000       0.00000000       0.00000000
+         xaxis        1.00000000       0.00000000       0.00000000
+         zaxis        0.00000000       0.00000000       1.00000000
+         orbital 2p+1
+         ivr         4
+         factor       1.00000000   +i      0.00000000
+
+
+
+
+------------------------------------------------------------------------
+              Determining the symmetries of the Molecular 
+           orbitals (MO) defining the Wannier functions (WF)
+
+Rep mat of MO:
+operation E
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(y)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(x)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(z)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/3(-111)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/3(1-11)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2/3(-1-11)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2/3(111)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2/3(-111)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/3(111)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2/3(1-11)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/3(-1-11)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(xy)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C3/4(z)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/4(z)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(x-y)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(xz)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(x-z)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C3/4(y)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/4(y)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(y-z)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C3/4(x)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C2(yz)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation C1/4(x)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation I
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(y)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(x)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(z)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0            0            0           1.00000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S5/6(-111)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S5/6(1-11)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/6(-1-11)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/6(111)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/6(-111)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S5/6(111)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/6(1-11)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S5/6(-1-11)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0           0.86603       0          -0.50000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(xy)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/4(z)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S3/4(z)
+printmat: 	
+    -1.00000       0            0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(x-y)
+printmat: 	
+     1.00000       0            0            0            0            0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           1.00000       0            0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0            0            0          -1.00000       0            0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(xz)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(x-z)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0           1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/4(y)
+printmat: 	
+      0          -1.00000       0            0            0            0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+      0            0            0            0            0            0           1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S3/4(y)
+printmat: 	
+      0           1.00000       0            0            0            0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.50000       0           0.86603       0            0            0      
+      0            0            0          -1.00000       0            0            0            0      
+      0            0           0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+      0            0            0            0            0            0          -1.00000       0      
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(y-z)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S1/4(x)
+printmat: 	
+      0            0            0           1.00000       0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0           1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation s(yz)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+      0           1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+    -1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0          -1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0           1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+operation S3/4(x)
+printmat: 	
+      0            0            0          -1.00000       0            0            0            0      
+      0          -1.00000       0            0            0            0            0            0      
+      0            0          -0.50000       0          -0.86603       0            0            0      
+     1.00000       0            0            0            0            0            0            0      
+      0            0          -0.86603       0           0.50000       0            0            0      
+      0            0            0            0            0            0           1.00000       0      
+      0            0            0            0            0          -1.00000       0            0      
+      0            0            0            0            0            0            0          -1.00000 
+printmat: 	
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+      0            0            0            0            0            0            0            0      
+
+                       E                    C2(y)                    C2(x)                    C2(z)               C1/3(-111)               C1/3(1-11)              C2/3(-1-11)                C2/3(111)               C2/3(-111)                C1/3(111)               C2/3(1-11)              C1/3(-1-11)                   C2(xy)                  C3/4(z)                  C1/4(z)                  C2(x-y)                   C2(xz)                  C2(x-z)                  C3/4(y)                  C1/4(y)                  C2(y-z)                  C3/4(x)                   C2(yz)                  C1/4(x)                        I                     s(y)                     s(x)                     s(z)               S5/6(-111)               S5/6(1-11)              S1/6(-1-11)                S1/6(111)               S1/6(-111)                S5/6(111)               S1/6(1-11)              S5/6(-1-11)                    s(xy)                  S1/4(z)                  S3/4(z)                   s(x-y)                    s(xz)                   s(x-z)                  S1/4(y)                  S3/4(y)                   s(y-z)                  S1/4(x)                    s(yz)                  S3/4(x) 
+      8.000 +i      0.000      0.000 +i      0.000      0.000 +i      0.000      0.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -0.000 +i      0.000     -0.000 +i      0.000     -0.000 +i      0.000     -0.000 +i      0.000      0.000 +i      0.000      0.000 +i      0.000     -0.000 +i      0.000     -0.000 +i      0.000      0.000 +i      0.000     -0.000 +i      0.000      0.000 +i      0.000     -0.000 +i      0.000      2.000 +i      0.000      2.000 +i      0.000      2.000 +i      0.000      2.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000     -1.000 +i      0.000      2.000 +i      0.000     -2.000 +i      0.000     -2.000 +i      0.000      2.000 +i      0.000      2.000 +i      0.000      2.000 +i      0.000     -2.000 +i      0.000     -2.000 +i      0.000      2.000 +i      0.000     -2.000 +i      0.000      2.000 +i      0.000     -2.000 +i      0.000 
+
+------------------------------------------------------------------------
+
+WARNING in MODULE WANNIER(do_wanniers):
+ File '+wancoeff' not found ... will resume normal execution.
+ If you like to do Wanniers from file, wait until files are writen
+ (after each step) and restart.
+ 
+ CPU   : radial equation: cpu time:           0.24 sec
+ 
+ 
+ CPU   : Total One-center integrals: cpu time:           0.02 sec
+ 
+ 
+ CPU   : Total Two-center integrals: cpu time:           0.03 sec
+ 
+SCF: Iteration version (   2) : Iterat   : Hyperspace interpolation             
+SCF: Tolerance         =    0.10E-09
+SCF: Vector dimension  =        1200
+SCF: Max hyperspace dim=     5
+SCF: Max mixing        =    0.40E+00
+SCF: Max steps         =   100
+SCF: 
+SCF: iteration  0  dimension  0  last deviation u=  0.00E+00
+SCF:               interpolated  new deviation  u=  0.00E+00  step p= 0.400
+SCF: 
+
+------------------------------------------------------------------------
+Writing =.dens ...!
+------------------------------------------------------------------------------
+                                Density Analysis
+site elem. Spin up       Spin down    Sum           Nuclear        Excess
+           (electrons)   (electrons)  (electrons)   (protons)      electrons
+------------------------------------------------------------------------------
+  1  Ni   13.58931338   13.58931338   27.17862677   28.00000000   -0.82137323
+  2  O     4.41068706    4.41068706    8.82137412    8.00000000    0.82137412
+------------------------------------------------------------------------------
+sum  :    18.00000044   18.00000044   36.00000088   36.00000000    0.00000088
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+==========                      CHARGE                        ==========
+------------------------------------------------------------------------
+  nu. charge    el. charge    mag. moment     spin up       spin down
+       36.00    36.0000009      0.0000000    18.0000004     18.0000004
+
+-------------------------------------------------
+|  ATOM   |  SITE  |  MAG.MOMENT  |  NU.CHARGE  |
+-------------------------------------------------
+|   Ni    |   1    |  0.0000000   |     28.00   |
+|   O     |   2    |  0.0000000   |      8.00   |
+-------------------------------------------------
+(Scalar)Relativistic and no finite nucleus: no r=0 densities.
+ 
+ CPU   : Coulomb-potential: cpu time:           0.00 sec
+ 
+calc_nv_erg: onsit env    :                 -2543.80513287
+calc_nv_erg: onsit exc0   :                   -68.59255528
+calc_nv_erg: onsit envxc0 :                   -90.77093686
+calc_nv_erg: onsit e0     :                 -1220.98724232
+calc_nv_erg: offsite      :                    -0.18711624
+calc_nv_erg: n*vc-11      :                 -1221.17435855
+calc_nv_erg: n*vat        :                   -11.40586633
+calc_nv_erg: offsit exc0  :                    -8.11649468
+calc_nv_erg: offsit envxc0:                   -10.54916471
+calc_nv_erg: n*excat      :                   -76.70904997
+calc_nv_erg: n*vxcat      :                  -101.32010157
+ 
+ CPU   : calc_nv_erg: cpu time:           0.06 sec
+ 
+
+
+============================== START molpottogrid============================== 
+molpottogrid: EXC(n)             :                   -69.13563385
+molpottogrid: EXC(at)            :                    76.70949779
+molpottogrid: EXC                :                   -69.13518603
+molpottogrid: n*VXC(n)           :                   -91.48340158
+molpottogrid: n*VXC(at)          :                   101.32068323
+molpottogrid: ENVXC              :                   -91.48281993
+molpottogrid: Int(n*v)           :                    16.30081650
+molpottogrid: Int(n*VCoulomb)    :                    -2.53934313
+molpottogrid: Int(Z*VCoulomb)    :                     3.19165002
+ 
+ CPU   : MOLPOTpot -> grid: cpu time:           0.03 sec
+ 
+============================== END   molpottogrid============================== 
+
+
+erg_hart_0:secnd term  onsite  :         -1919.922961
+erg_hart_0: Int(Z*VCoulomb) tot:         -1916.731311
+ 
+ CPU   : make potential: cpu time:           0.09 sec
+ 
+
+
+============================== START loi_int============================== 
+Allocated p_gdiff(   135,    48,     2,     2) =    0.10368 MByte
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+ 
+ CPU   : LOICore one-center integrals: cpu time:           0.01 sec
+ 
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+ 
+ CPU   : LOIThree-center integrals: cpu time:           0.23 sec
+ 
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+real site    1
+real site    2
+ 
+ CPU   : LOIThree-center vc-integrals: cpu time:           0.11 sec
+ 
+============================== END   loi_int============================== 
+
+
+ 
+ CPU   : LO integrals: cpu time:           0.35 sec
+ 
+ 
+ CPU   : Total core transformation of S/Hcv: cpu time:           0.00 sec
+ 
+INFORMATION in MODULE KOHNSHAM(calc_KS_states):
+ Do-Wanniers-from-file option set by user...
+ will start dumping data for creating wannier functions.
+DIAGONALIZATION:   0.06% done
+
+K-vector     1 :     0.0000    0.0000    0.0000
+Band energies at spin   1
+   -18.6187107    -3.8679029    -2.4293275    -2.4293275    -2.4293275
+    -0.8474909    -0.2246663    -0.2246663    -0.2246663    -0.1775317
+    -0.1775317    -0.1775317    -0.1713443    -0.1713443    -0.0597841
+     0.6044250     0.6044250     0.6044250     0.7004864     0.7004864
+     0.7004864     0.8558561     0.8558561     1.2703441     1.3366848
+     1.3366848     1.3366848     2.2283616     2.4289824     2.4289824
+     2.4289824     2.7777455     2.7777455
+DIAGONALIZATION:   9.99% done
+DIAGONALIZATION:  19.99% done
+DIAGONALIZATION:  29.98% done
+DIAGONALIZATION:  39.98% done
+DIAGONALIZATION:  49.97% done
+DIAGONALIZATION:  59.96% done
+DIAGONALIZATION:  69.96% done
+DIAGONALIZATION:  79.95% done
+DIAGONALIZATION:  89.95% done
+DIAGONALIZATION:  99.94% done
+DIAGONALIZATION: 100.00% done
+ EFRANG: ebmin= -18.6187107,  ebmax=   2.9679108
+ EFRANG: e1=  -0.1713443,  e2=  -0.0698215
+ BANDWT: ---- Tetrahedron Integration ---- 
+              Estimating Fermi energy ...
+      Estimate             Window            Tolerance     N(E_f)
+     ------------------------------------------------------------------
+    -0.1155865    -0.1165220  -0.1155068   0.10152D-02     53.296366
+    -0.1155862    -0.1155880  -0.1155779   0.10152D-04     53.421850
+    -0.1155862    -0.1155863  -0.1155862   0.10152D-06     53.420369
+    -0.1155862    -0.1155862  -0.1155862   0.10152D-08     53.420681
+    -0.1155862    -0.1155862  -0.1155862   0.10152D-10     53.434812
+ BANDWT: Density of states at E_f:   N(E_f) =   53.434812 states/Ha
+ TETWTS: Fermi energy: -0.115586; 26.000000 electrons
+         Band energy:   -64.25553734, including Bloechl correction:-0.000125
+ BANDWT: spin:  1
+ BANDWT: highest fully occupied band :    12
+ BANDWT: lowest fully unoccupied band:    15
+ BANDWT: WARNING: Gap information is insecure! Check DOS.
+ BANDWT: total     gap :    0.00000 eV
+ 
+ CPU   : det_bandweights: cpu time:           0.58 sec
+ 
+
+Density of states calculated !
+
+ 
+ CPU   : Total KS-DOS: cpu time:          12.18 sec
+ 
+------------------------------------------------------------------------
+                              Population Analysis 
+                           (valence electron numbers) 
+
+
+       El Site                                                                                  SUM       Excess electrons
+                    3s         3p         4s         5s         3d         4d         4p    
+N_net  Ni   1    2.01437    6.03740    0.11933    0.00050    8.46981    0.02907    0.07509    16.74557
+N_gros Ni   1    1.99955    6.00524    0.31904   -0.00866    8.52744    0.13465    0.37466    17.35190   -0.64810
+
+                    1s         2s         3s         2p         3p         3d               
+N_net  O    2    2.00049    1.93867    0.00202    4.30250    0.00695    0.00148                8.25211
+N_gros O    2    2.00001    1.90882   -0.00869    4.72058    0.00815    0.01923                8.64810    0.64810
+
+
+total net   electron number:                                                                  24.99768
+total gross electron number:                                                                  26.00000    0.00000
+
+
+------------------------------------------------------------------------
+
+INFORMATION in MODULE KOHNSHAM(create_bandstructure):
+ Do-Wanniers-from-file option set by user...
+ will start dumping data for creating wannier band-plots.
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.00 sec   0.00% done ETA=N/A
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.00 sec   0.40% done ETA=N/A
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.00 sec   0.81% done ETA=N/A
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.00 sec   1.21% done ETA=N/A
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.01 sec   1.62% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.01 sec   2.02% done ETA=0.49s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.01 sec   2.43% done ETA=0.41s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.01 sec   2.83% done ETA=0.35s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.02 sec   3.24% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.02 sec   3.64% done ETA=0.55s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.02 sec   4.05% done ETA=0.49s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.03 sec   4.86% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.04 sec   6.48% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.05 sec   8.10% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.06 sec   9.31% done ETA=0.64s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.06 sec   9.72% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.07 sec  10.12% done ETA=0.69s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.12 sec  19.43% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.18 sec  29.15% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.24 sec  38.87% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.30 sec  48.58% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.36 sec  58.30% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.42 sec  68.02% done ETA=0.62s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.47 sec  77.73% done ETA=0.60s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.53 sec  87.45% done ETA=0.61s
+ CPU   : KOHNSHAM bandstructure plot: cpu time:           0.59 sec  97.17% done ETA=0.61s
+
+Band structure/band weights calculated !
+
+ 
+ CPU   : Total KOHNSHAM bandstructure plot: cpu time:           0.61 sec
+ 
+ 
+ CPU   : Kohn-Sham equation: cpu time:          20.18 sec
+ 
+ 
+ CPU   : Net density: cpu time:           0.00 sec
+ 
+ 
+ CPU   : Occupation numbers: cpu time:           0.39 sec
+ 
+ 
+ CPU   : Overlap density: cpu time:           0.11 sec
+ 
+------------------------------------------------------------------------------
+                                Density Analysis
+site elem. Spin up       Spin down    Sum           Nuclear        Excess
+           (electrons)   (electrons)  (electrons)   (protons)      electrons
+------------------------------------------------------------------------------
+  1  Ni   13.58931338   13.58931338   27.17862677   28.00000000   -0.82137323
+  2  O     4.41068706    4.41068706    8.82137412    8.00000000    0.82137412
+------------------------------------------------------------------------------
+sum  :    18.00000044   18.00000044   36.00000088   36.00000000    0.00000088
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+==========                      CHARGE                        ==========
+------------------------------------------------------------------------
+  nu. charge    el. charge    mag. moment     spin up       spin down
+       36.00    36.0000009      0.0000000    18.0000004     18.0000004
+
+-------------------------------------------------
+|  ATOM   |  SITE  |  MAG.MOMENT  |  NU.CHARGE  |
+-------------------------------------------------
+|   Ni    |   1    |  0.0000000   |     28.00   |
+|   O     |   2    |  0.0000000   |      8.00   |
+-------------------------------------------------
+(Scalar)Relativistic and no finite nucleus: no r=0 densities.
+ 
+ CPU   : Density calculation: cpu time:           0.50 sec
+ 
+
+------------------------------------------------------------------------
+==========                   TOTAL ENERGY                     ==========
+------------------------------------------------------------------------
+Ecore:     -858.24269755
+EBand:     -922.49823489
+T*S:          0.00000000
+            total energy         kinetic energy    potential energy    ex.-corr. energy
+EE:       -1593.1682507802        1616.41194781      -3140.44501256        -69.13518603
+
+------------------------------------------------------------------------
+
+estack     :       -1593.16825078
+eav  ,deav :       -1593.16825078            0.00000000
+
+------------------------------------------------------------------------
+
+ 
+ CPU   : fplo step: cpu time:          21.18 sec
+ 
+
+------------------------------------------------------------------------
+Writing =.dens ...!
+ 
+ CPU   : fplo cycle: cpu time:          21.20 sec
+ 
+SCF: 
+SCF: iteration  1  dimension  0  last deviation u=  0.14E-10 CONVERGED
+
+------------------------------------------------------------------------
+Writing =.dens ...!
+ 
+ CPU   : total fplo calculation: cpu time:          21.20 sec
+ 
+TERMINATION: Finished : SCF calculation
