@@ -1,4 +1,4 @@
-**If you would like to use this pipeline for your own applications, please see the release/1.0.0 branch**
+<span style="color:deepskyblue;"><strong>UPDATE:</strong></span> **If you would like to use this pipeline for your own applications, please see the [release/1.0.0 branch](https://github.com/CharlesCardot/ElectronicStructureAutomation/tree/release/1.0.0)**
 
 ### Introduction
 
