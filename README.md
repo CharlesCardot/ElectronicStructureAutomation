@@ -25,7 +25,7 @@ automation/
 │   ├── write_1.py
 │   ├── write_LFMcalc_general.py
 │   ├── write_feffinp.py
-│   ├── XES_XAS_XPS_template/
+│   ├── XAS_XES_XPS_template/
 │   └── .......
 ├── YOUR-PROJECT-DIRECTORY/
 ├── utils/
@@ -39,7 +39,7 @@ use (ex: `automation_template/XAS_XES_XPS`) into the `automation` directory. Thi
 directory in which the automation scripts will run. Inside it will look something like
 
 ```
-XES_XAS_XPS/
+XAS_XES_XPS/
 ├── execute_all.sh
 ├── execute_one.sh
 ├── make_all_plots.sh
