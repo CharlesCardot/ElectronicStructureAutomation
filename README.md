@@ -15,6 +15,8 @@ and is mostly just a way for me to back up my scripts, please enter at your own 
 For the FEFF automation specifically, a great alternative to my heaping pile of garbage 
 would be using Corvus (https://github.com/times-software/Corvus).
 
+![Automation Workflow](automation_workflow.png)
+
 ### Getting Started
 
 The automation scripts expect the following folder structure
