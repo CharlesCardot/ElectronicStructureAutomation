@@ -13,4 +13,6 @@ utilities that basically no one but me understands. It's also been adapted to ru
 batch jobs of FEFF calculations, mostly for VtC-XES. This is not in any way intended for real users, 
 and is mostly just a way for me to back up my scripts, please enter at your own risk.
 
+Enjoy!
+
 
